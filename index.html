@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ReLife Passport | Repair & Reuse Connect</title>
+  <meta name="description" content="ReLife Passport connects device owners to verified repair, refurbishment, donation, and recycling options with cost benchmarks and zero-risk data safety certificates.">
+  <meta name="theme-color" content="#1B8A5A">
+  
+  <!-- Open Graph Meta Tags for Social & Sharing -->
+  <meta property="og:title" content="ReLife Passport — Repair & Reuse Connect">
+  <meta property="og:description" content="Smart device second-life evaluation, repair price fairness meter, and zero-risk data-safety passport for electronics.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1591488320449-011701bb6704?w=1200&auto=format&fit=crop&q=80">
+
+  <!-- Inline SVG Favicon (Eco Leaf + Digital Circuit) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%231B8A5A'/><path d='M30 65 C30 40, 50 25, 70 25 C70 50, 55 65, 30 65 Z' fill='%23FFFFFF'/><path d='M35 60 L60 35' stroke='%231B8A5A' stroke-width='4' stroke-linecap='round'/><circle cx='46' cy='46' r='3' fill='%231B8A5A'/></svg>">
+
+  <!-- Modern Google Font: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- Main Mobile-First Container (420px Frame on Desktop) -->
+  <div class="app-container" id="app-root">
+
+    <!-- Sticky App Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <button id="back-btn" class="back-btn" aria-label="Go Back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="brand-wrapper">
+          <div class="brand-icon">🌱</div>
+          <div class="brand-text">
+            <h1 data-i18n="appName">ReLife Passport</h1>
+            <p data-i18n="tagline">Repair & Reuse Connect</p>
+          </div>
+        </div>
+      </div>
+      <button id="lang-toggle-btn" class="lang-toggle-btn" aria-label="Toggle Language">
+        🌐 தமிழ்
+      </button>
+    </header>
+
+    <!-- 5-Step Visual Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-track">
+        <div id="progress-fill" class="progress-fill-line"></div>
+        <div class="step-node active" data-step="1">1</div>
+        <div class="step-node" data-step="2">2</div>
+        <div class="step-node" data-step="3">3</div>
+        <div class="step-node" data-step="4">4</div>
+        <div class="step-node" data-step="5">5</div>
+      </div>
+      <div class="progress-label-bar">
+        <span>Step <span id="current-step-num">1</span> of 5</span>
+        <span id="progress-step-name" class="progress-step-name">Diagnose</span>
+      </div>
+    </div>
+
+    <!-- Scrollable Screens Viewport -->
+    <main class="screens-viewport">
+
+      <!-- =============================================================
+           SCREEN 1: PROBLEM INPUT
+           ============================================================= -->
+      <section class="screen active" data-screen="1" id="screen-1">
+        <div class="screen-header">
+          <h2 data-i18n="screen1Title">Device Diagnosis</h2>
+          <p data-i18n="screen1Subtitle">Select your device and symptoms to calculate the smartest next step</p>
+        </div>
+
+        <!-- Inline Error Message -->
+        <div id="input-error" class="error-box" role="alert">
+          ⚠️ Please select your device model and problem to continue.
+        </div>
+
+        <!-- Device Type Selector -->
+        <div class="form-group">
+          <label class="form-label" data-i18n="deviceTypeLabel">Device Category</label>
+          <div class="segmented-control">
+            <button type="button" id="type-phone" class="segment-btn active">
+              <span>📱</span> <span class="segment-label" data-i18n="phone">Smartphone</span>
+            </button>
+            <button type="button" id="type-laptop" class="segment-btn">
+              <span>💻</span> <span class="segment-label" data-i18n="laptop">Laptop</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Model Dropdown -->
+        <div class="form-group">
+          <label class="form-label" for="device-model" data-i18n="modelLabel">Select Model</label>
+          <div class="select-wrapper">
+            <select id="device-model" class="custom-select">
+              <option value="">-- Select your device model --</option>
+            </select>
+            <div class="select-chevron">▼</div>
+          </div>
+        </div>
+
+        <!-- Age Slider -->
+        <div class="form-group">
+          <div class="slider-container">
+            <div class="slider-header">
+              <span class="slider-title" data-i18n="ageLabel">Device Age</span>
+              <span id="age-display-badge" class="slider-badge">3 years old</span>
+            </div>
+            <input type="range" id="device-age" class="styled-range" min="0" max="10" step="1" value="3" aria-label="Device age slider">
+            <div class="range-ticks">
+              <span>0 (New)</span>
+              <span>2y</span>
+              <span>5y</span>
+              <span>7y</span>
+              <span>10y+</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Problem Selector Cards -->
+        <div class="form-group">
+          <label class="form-label" data-i18n="problemLabel">What issue are you facing?</label>
+          <div id="problems-container" class="problems-grid">
+            <!-- Dynamically injected problem cards -->
+          </div>
+        </div>
+
+        <!-- Power On/Off Toggle -->
+        <div class="form-group">
+          <div class="toggle-card">
+            <div class="toggle-label-wrap">
+              <div class="toggle-title" data-i18n="powerQuestion">Does the device still turn on?</div>
+              <div class="toggle-sub">Essential for data sanitization and testing</div>
+            </div>
+            <div class="toggle-switch-pills">
+              <button type="button" id="toggle-working-yes" class="pill-option active yes" data-i18n="yes">Yes</button>
+              <button type="button" id="toggle-working-no" class="pill-option no" data-i18n="no">No</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Try Demo Preset Button -->
+        <div class="demo-prefill-box">
+          <button type="button" id="btn-demo-example" class="demo-btn">
+            <span data-i18n="demoButton">⚡ Try Demo Example (Redmi Note 11)</span>
+          </button>
+        </div>
+
+        <!-- Primary Calculation CTA -->
+        <button type="button" id="btn-calculate" class="btn-primary">
+          <span data-i18n="calculateBtn">Calculate Second-Life Viability →</span>
+        </button>
+      </section>
+
+      <!-- =============================================================
+           SCREEN 2: RESULT & SECOND-LIFE SCORE
+           ============================================================= -->
+      <section class="screen" data-screen="2" id="screen-2">
+        <div class="screen-header">
+          <h2 data-i18n="screen2Title">Second-Life Evaluation</h2>
+          <p data-i18n="screen2Subtitle">Algorithmic decision based on repair economics, hardware age, and functional status</p>
+        </div>
+
+        <div class="result-card-container">
+          <!-- Circular Score Card -->
+          <div class="score-card">
+            <div class="score-card-title" data-i18n="secondLifeScore">Second-Life Viability Score</div>
+            
+            <div class="gauge-box">
+              <svg class="gauge-svg" viewBox="0 0 140 140">
+                <circle class="gauge-bg" cx="70" cy="70" r="60"></circle>
+                <circle id="gauge-circle-fill" class="gauge-fill" cx="70" cy="70" r="60"></circle>
+              </svg>
+              <div class="gauge-content">
+                <div id="score-number-val" class="gauge-number">0</div>
+                <div class="gauge-subtext">Index</div>
+              </div>
+            </div>
+
+            <div id="score-status-pill" class="score-status-pill">Calculating...</div>
+            <p id="score-explanation-text" class="score-desc-text">Evaluating device viability...</p>
+          </div>
+
+          <!-- Recommendation Hero Badge -->
+          <div id="recommendation-card" class="recommendation-card repair">
+            <div class="rec-eyebrow" data-i18n="recLabel">Recommended Action</div>
+            <div id="rec-badge-text" class="rec-badge-hero">🛠️ REPAIR</div>
+            <p id="rec-reason-text" class="rec-reason-text">
+              Economical repair under 40% of replacement cost. Extends healthy device life by 2-3 years.
+            </p>
+          </div>
+
+          <!-- Device Summary Snapshot -->
+          <div class="device-snapshot">
+            <div class="snapshot-item">
+              <div class="snapshot-label">Device</div>
+              <div id="snapshot-model-name" class="snapshot-val">Redmi Note 11</div>
+            </div>
+            <div class="snapshot-item">
+              <div class="snapshot-label">Reported Issue</div>
+              <div id="snapshot-issue-name" class="snapshot-val">Battery Drains Fast</div>
+            </div>
+            <div class="snapshot-item">
+              <div class="snapshot-label">Age</div>
+              <div id="snapshot-age-val" class="snapshot-val">3 years old</div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="btn-go-to-economics" class="btn-primary">
+          <span data-i18n="viewCostBtn">View Cost Breakdown & Savings →</span>
+        </button>
+      </section>
+
+      <!-- =============================================================
+           SCREEN 3: COST CARD & ECONOMICS
+           ============================================================= -->
+      <section class="screen" data-screen="3" id="screen-3">
+        <div class="screen-header">
+          <h2 data-i18n="screen3Title">Economic & Environmental Impact</h2>
+          <p data-i18n="screen3Subtitle">Transparent repair benchmarking vs replacement cost</p>
+        </div>
+
+        <!-- Side-by-Side Cost Comparison -->
+        <div class="cost-comparison-row">
+          <div class="cost-col-card repair-col">
+            <div class="cost-col-label" data-i18n="repairCostHeader">Repair Cost</div>
+            <div id="repair-cost-val" class="cost-col-value">₹1,400</div>
+          </div>
+          <div class="cost-col-card">
+            <div class="cost-col-label" data-i18n="newPriceHeader">New Price</div>
+            <div id="new-price-val" class="cost-col-value">₹13,999</div>
+          </div>
+        </div>
+
+        <!-- Largest Text on Screen: Super Savings Banner -->
+        <div class="savings-hero-banner">
+          <div class="savings-label" data-i18n="youSaveText">You Save</div>
+          <div id="savings-amount-val" class="savings-amount-huge">₹12,599</div>
+          <div class="savings-sub" data-i18n="vsBuyingNew">compared to purchasing a new device</div>
+        </div>
+
+        <!-- Environmental Savings Grid -->
+        <div class="eco-impact-grid">
+          <div class="eco-metric-card">
+            <div class="eco-icon-pill">🌿</div>
+            <div class="eco-metric-info">
+              <h5 id="co2-amount-val">60 kg</h5>
+              <p data-i18n="co2Avoided">CO₂ Avoided</p>
+            </div>
+          </div>
+          <div class="eco-metric-card">
+            <div class="eco-icon-pill">♻️</div>
+            <div class="eco-metric-info">
+              <h5 id="ewaste-amount-val">0.2 kg</h5>
+              <p data-i18n="ewasteAvoided">E-Waste Diverted</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Repair Price Fairness Meter -->
+        <div class="fairness-meter-card">
+          <div class="fairness-header">
+            <h4><span data-i18n="fairnessMeterTitle">Repair Price Fairness Meter</span> ⚖️</h4>
+            <span class="fairness-badge">Benchmark</span>
+          </div>
+
+          <div class="meter-track-box">
+            <div class="meter-bar">
+              <div id="fairness-marker" class="meter-marker" style="left: 45%;">
+                <div class="marker-tag">Fair Price</div>
+                <div class="marker-pin"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="meter-range-labels">
+            <span>Min: <strong id="fairness-min-val">₹1,100</strong></span>
+            <span>Max: <strong id="fairness-max-val">₹1,800</strong></span>
+          </div>
+
+          <div class="fairness-guidance-note">
+            <span>💡</span>
+            <span>
+              <span data-i18n="fairnessTip">Do not pay more than</span>
+              <strong id="fairness-max-guidance">₹1,800</strong>
+              <span data-i18n="fairnessTipSuffix">at local repair shops.</span>
+            </span>
+          </div>
+        </div>
+
+        <button type="button" id="btn-go-to-safety" class="btn-primary">
+          <span data-i18n="proceedSafetyBtn">Proceed to Data-Safety Wizard →</span>
+        </button>
+      </section>
+
+      <!-- =============================================================
+           SCREEN 4: DATA-SAFETY WIZARD & CERTIFICATE
+           ============================================================= -->
+      <section class="screen" data-screen="4" id="screen-4">
+        <div class="screen-header">
+          <div id="safety-os-badge" class="safety-header-pill">🔒 Tailored for Android OS</div>
+          <h2 data-i18n="screen4Title">Zero-Data-Risk Handover Wizard</h2>
+          <p data-i18n="screen4Subtitle">Step-by-step verified preparation before handing over your device</p>
+        </div>
+
+        <!-- Checklist Progress Track -->
+        <div class="checklist-progress-bar-box">
+          <div class="cl-progress-info">
+            <span data-i18n="checklistProgress">Safety Checklist Progress</span>
+            <span id="checklist-progress-text">0/6 Completed (0%)</span>
+          </div>
+          <div class="cl-track">
+            <div id="checklist-fill" class="cl-fill"></div>
+          </div>
+        </div>
+
+        <!-- Interactive Safety Checklist -->
+        <div id="safety-checklist-container" class="safety-checklist-list">
+          <!-- Dynamically populated from data.js based on device OS -->
+        </div>
+
+        <!-- Sealed Handover Certificate (Unlocks when 6/6 checked) -->
+        <div id="certificate-container" class="certificate-container">
+          <div class="certificate-card">
+            <div class="cert-stamp-badge">VERIFIED SAFE</div>
+
+            <div class="cert-header">
+              <h3>🛡️ <span data-i18n="certificateTitle">Data-Safe Handover Certificate</span></h3>
+              <p>Official sealed digital receipt for circular transfer</p>
+            </div>
+
+            <div class="cert-details-grid">
+              <div class="cert-field">
+                <label data-i18n="certIdLabel">Certificate ID</label>
+                <span id="cert-id-val">RLP-2026-4892</span>
+              </div>
+              <div class="cert-field">
+                <label data-i18n="certDateLabel">Handover Date</label>
+                <span id="cert-date-val">29 Oct 2026</span>
+              </div>
+              <div class="cert-field full">
+                <label data-i18n="certDeviceLabel">Device Model</label>
+                <span id="cert-device-val">Redmi Note 11</span>
+              </div>
+              <div class="cert-field full">
+                <label data-i18n="certStatusLabel">Sanitization Status</label>
+                <span style="color: #10B981;" data-i18n="certStatusVerified">✓ 100% Personal Data Safely Wiped</span>
+              </div>
+            </div>
+
+            <div class="cert-qr-row">
+              <div id="qrcode-container"></div>
+              <div class="cert-qr-instructions">
+                <h5>Scannable Digital Verification</h5>
+                <p data-i18n="certInstruction">Show this certified QR receipt to your technician or collection agent.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="btn-go-to-connect" class="btn-primary">
+          <span data-i18n="proceedConnectBtn">Connect with Verified Partners →</span>
+        </button>
+      </section>
+
+      <!-- =============================================================
+           SCREEN 5: CONNECT + IMPACT DASHBOARD
+           ============================================================= -->
+      <section class="screen" data-screen="5" id="screen-5">
+        <div class="screen-header">
+          <h2 data-i18n="screen5Title">Verified Local Partners & Impact</h2>
+          <p data-i18n="screen5Subtitle">Authorized repair labs, refurbishers, NGOs and certified recyclers</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-scroll-wrapper">
+          <div class="filter-pills-row">
+            <button type="button" class="filter-pill active" data-filter="all" data-i18n="filterAll">All Partners</button>
+            <button type="button" class="filter-pill" data-filter="repair" data-i18n="filterRepair">Repair Labs</button>
+            <button type="button" class="filter-pill" data-filter="refurbish" data-i18n="filterRefurbish">Sell / Refurbish</button>
+            <button type="button" class="filter-pill" data-filter="donate" data-i18n="filterDonate">NGO Donation</button>
+            <button type="button" class="filter-pill" data-filter="recycle" data-i18n="filterRecycle">Green Recyclers</button>
+          </div>
+        </div>
+
+        <!-- Providers List -->
+        <div id="providers-container" class="providers-list">
+          <!-- Dynamically populated from data.js -->
+        </div>
+
+        <!-- Impact Dashboard Widget (Persisted in localStorage) -->
+        <div class="impact-dashboard-card">
+          <div class="impact-header">
+            <h3>🌍 <span data-i18n="impactTitle">Community Circular Impact</span></h3>
+          </div>
+          
+          <div class="impact-metrics-grid">
+            <div class="impact-metric-box">
+              <div id="impact-diverted-val" class="impact-number">142</div>
+              <div class="impact-metric-label" data-i18n="devicesDivertedLabel">Devices Diverted</div>
+            </div>
+            <div class="impact-metric-box">
+              <div id="impact-saved-val" class="impact-number">₹8,45,000</div>
+              <div class="impact-metric-label" data-i18n="totalSavedLabel">Rupees Saved</div>
+            </div>
+            <div class="impact-metric-box">
+              <div id="impact-ewaste-val" class="impact-number">84.5 kg</div>
+              <div class="impact-metric-label" data-i18n="totalEwasteLabel">E-Waste Avoided</div>
+            </div>
+            <div class="impact-metric-box">
+              <div id="impact-co2-val" class="impact-number">12,400 kg</div>
+              <div class="impact-metric-label" data-i18n="totalCo2Label">CO₂ Avoided</div>
+            </div>
+          </div>
+
+          <div class="impact-footer-actions">
+            <button type="button" id="btn-reset-impact" class="reset-demo-btn" data-i18n="resetDemoBtn">
+              Reset Demo Stats
+            </button>
+          </div>
+        </div>
+
+        <button type="button" id="btn-start-over" class="btn-secondary">
+          <span data-i18n="startOverBtn">Start New Assessment 🔄</span>
+        </button>
+      </section>
+
+    </main>
+
+    <!-- Booking / Handover Scheduling Modal -->
+    <div id="booking-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-dialog">
+        <button id="modal-close-btn" class="modal-close-btn" aria-label="Close dialog">✕</button>
+
+        <!-- Booking Form State -->
+        <div id="modal-booking-form">
+          <div class="modal-header">
+            <h3 id="modal-title" data-i18n="modalTitle">Schedule Device Handover</h3>
+            <div id="modal-provider-name" class="modal-provider-name">EcoFix Tech Lab</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="pickupOption">Service Mode</label>
+            <div class="segmented-control">
+              <button type="button" class="segment-btn active" id="mode-dropoff" data-i18n="modeDropoff">Direct Drop-off</button>
+              <button type="button" class="segment-btn" id="mode-pickup" data-i18n="modePickup">Doorstep Pickup</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-booking-date" data-i18n="dateLabel">Preferred Date</label>
+            <input type="date" id="modal-booking-date" class="custom-select" style="padding-right: 14px;">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="timeSlotLabel">Time Window</label>
+            <div class="slots-grid">
+              <div class="slot-radio-card selected" data-slot="morning">
+                <span data-i18n="slotMorning">Morning (9:30 AM - 1:00 PM)</span>
+                <span>☀️</span>
+              </div>
+              <div class="slot-radio-card" data-slot="afternoon">
+                <span data-i18n="slotAfternoon">Afternoon (1:00 PM - 5:00 PM)</span>
+                <span>🌤️</span>
+              </div>
+              <div class="slot-radio-card" data-slot="evening">
+                <span data-i18n="slotEvening">Evening (5:00 PM - 8:30 PM)</span>
+                <span>🌙</span>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" id="btn-confirm-booking" class="btn-primary">
+            <span data-i18n="confirmBookingBtn">Confirm Handover Appointment</span>
+          </button>
+        </div>
+
+        <!-- Booking Success Confirmation State -->
+        <div id="modal-success-view" class="booking-confirmed-card" style="display: none;">
+          <div class="success-check-icon">✓</div>
+          <h3 data-i18n="bookingSuccessTitle">Appointment Confirmed!</h3>
+          <p style="font-size: 13px; color: #64748B; margin-top: 4px;" data-i18n="bookingSuccessDesc">
+            Your device handover has been registered with the provider.
+          </p>
+          <div id="modal-booking-ref" class="booking-ref-badge">BK-CHEN-7821</div>
+          <p style="font-size: 11.5px; color: #94A3B8; margin-bottom: 20px;">
+            A confirmation SMS with map location & token has been reserved.
+          </p>
+          <button type="button" id="modal-done-btn" class="btn-primary" data-i18n="closeBtn">Done</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="toast-notice" class="toast-notice" role="status" aria-live="polite">
+      Notification text
+    </div>
+
+  </div>
+
+  <!-- QR Code Library from CDN with robust offline SVG fallback in app.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Application Modules -->
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
