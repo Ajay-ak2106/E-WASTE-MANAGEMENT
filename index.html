@@ -45,9 +45,14 @@
           </div>
         </div>
       </div>
-      <button id="lang-toggle-btn" class="lang-toggle-btn" aria-label="Toggle Language">
-        🌐 தமிழ்
-      </button>
+      <div class="header-right">
+        <button id="nav-rescue-btn" class="nav-rescue-btn" aria-label="Component Rescue">
+          <span data-i18n="navRescueBtn">🧩 Component Rescue</span>
+        </button>
+        <button id="lang-toggle-btn" class="lang-toggle-btn" aria-label="Toggle Language">
+          🌐 தமிழ்
+        </button>
+      </div>
     </header>
 
     <!-- 5-Step Visual Progress Bar -->
@@ -196,6 +201,17 @@
             <p id="rec-reason-text" class="rec-reason-text">
               Economical repair under 40% of replacement cost. Extends healthy device life by 2-3 years.
             </p>
+          </div>
+
+          <!-- Reusable Component Rescue Card (Dynamically shown on DONATE / RECYCLE) -->
+          <div id="result-rescue-card" class="result-rescue-card" style="display: none;">
+            <div class="rescue-card-top">
+              <span class="rescue-badge-pill">🧩 <span data-i18n="resultRescueCardTitle">Your device contains reusable components</span></span>
+            </div>
+            <p data-i18n="resultRescueCardDesc">Even if unrepairable, internal RAM, SSD, screen or charger can restore another device. List them in the Rescue Pool.</p>
+            <button type="button" id="btn-result-to-rescue" class="btn-rescue-action">
+              <span data-i18n="resultRescueBtn">List Spare Parts on Rescue Pool 🧩</span>
+            </button>
           </div>
 
           <!-- Device Summary Snapshot -->
@@ -381,6 +397,19 @@
           <p data-i18n="screen5Subtitle">Authorized repair labs, refurbishers, NGOs and certified recyclers</p>
         </div>
 
+        <!-- Parts available nearby teaser strip -->
+        <div id="connect-rescue-teaser" class="connect-rescue-teaser">
+          <div class="teaser-left">
+            <span class="teaser-icon">🧩</span>
+            <div class="teaser-text">
+              <strong data-i18n="connectTeaserTitle">Component Rescue Pool</strong>: <span id="teaser-parts-count">12</span> <span data-i18n="connectTeaserDesc">tested spare parts available nearby.</span>
+            </div>
+          </div>
+          <button type="button" id="btn-teaser-to-rescue" class="btn-teaser-action">
+            <span data-i18n="connectTeaserBtn">Open Component Rescue →</span>
+          </button>
+        </div>
+
         <!-- Filter Tabs -->
         <div class="filter-scroll-wrapper">
           <div class="filter-pills-row">
@@ -403,7 +432,7 @@
             <h3>🌍 <span data-i18n="impactTitle">Community Circular Impact</span></h3>
           </div>
           
-          <div class="impact-metrics-grid">
+          <div class="impact-metrics-grid extended-metrics">
             <div class="impact-metric-box">
               <div id="impact-diverted-val" class="impact-number">142</div>
               <div class="impact-metric-label" data-i18n="devicesDivertedLabel">Devices Diverted</div>
@@ -411,6 +440,14 @@
             <div class="impact-metric-box">
               <div id="impact-saved-val" class="impact-number">₹8,45,000</div>
               <div class="impact-metric-label" data-i18n="totalSavedLabel">Rupees Saved</div>
+            </div>
+            <div class="impact-metric-box">
+              <div id="impact-parts-val" class="impact-number">38</div>
+              <div class="impact-metric-label" data-i18n="partsRescuedLabel">Parts Rescued from Scrap</div>
+            </div>
+            <div class="impact-metric-box">
+              <div id="impact-repairer-saved-val" class="impact-number">₹54,200</div>
+              <div class="impact-metric-label" data-i18n="repairerSavedLabel">Repairer Savings (₹)</div>
             </div>
             <div class="impact-metric-box">
               <div id="impact-ewaste-val" class="impact-number">84.5 kg</div>
@@ -432,6 +469,297 @@
         <button type="button" id="btn-start-over" class="btn-secondary">
           <span data-i18n="startOverBtn">Start New Assessment 🔄</span>
         </button>
+      </section>
+
+      <!-- =============================================================
+           SCREEN: COMPONENT RESCUE MATCHER
+           ============================================================= -->
+      <section class="screen" data-screen="rescue" id="screen-rescue">
+        <div class="screen-header rescue-header">
+          <div class="rescue-top-bar">
+            <button type="button" id="btn-back-to-flow" class="btn-back-flow">
+              <span data-i18n="rescueBackToFlow">← Back to Assessment Flow</span>
+            </button>
+          </div>
+          <h2 data-i18n="rescueTitle">Component Rescue Matcher</h2>
+          <p data-i18n="rescueSubtitle">Extend circular lifespan by matching tested reusable parts with local repairers</p>
+        </div>
+
+        <!-- 3 Rescue Mode Tabs -->
+        <div class="rescue-tabs-container">
+          <button type="button" class="rescue-tab-btn active" id="tab-btn-have" data-tab="have">
+            <span data-i18n="tabHaveParts">I Have Parts</span>
+          </button>
+          <button type="button" class="rescue-tab-btn" id="tab-btn-need" data-tab="need">
+            <span data-i18n="tabNeedParts">I Need Parts</span>
+          </button>
+          <button type="button" class="rescue-tab-btn" id="tab-btn-pool" data-tab="pool">
+            <span data-i18n="tabBrowsePool">Browse Rescue Pool</span>
+          </button>
+        </div>
+
+        <!-- Inline Feedback / Error Box -->
+        <div id="rescue-form-error" class="error-box" role="alert" style="display: none;"></div>
+
+        <!-- VIEW 1: "I HAVE PARTS" (DONOR / SELLER LISTING) -->
+        <div id="view-have-parts" class="rescue-tab-view active">
+          <!-- Form Fields -->
+          <div class="form-group">
+            <label class="form-label" for="part-source-device" data-i18n="formSourceDevice">Source Device</label>
+            <div class="select-wrapper">
+              <select id="part-source-device" class="custom-select">
+                <option value="">-- Select Origin Device Model --</option>
+              </select>
+              <div class="select-chevron">▼</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="part-component-type" data-i18n="formComponentType">Component Category</label>
+            <div class="select-wrapper">
+              <select id="part-component-type" class="custom-select">
+                <option value="">-- Select Component Type --</option>
+              </select>
+              <div class="select-chevron">▼</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="part-spec" data-i18n="formSpec">Technical Specification / Model</label>
+            <input type="text" id="part-spec" class="custom-select" style="padding-right: 14px;" placeholder="e.g. 8GB DDR4 3200MHz SODIMM or 256GB NVMe SSD">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="formCondition">Tested Condition</label>
+            <div class="condition-pills-row">
+              <button type="button" class="cond-pill active" id="cond-working" data-cond="Tested - Working">
+                <span>✓</span> <span data-i18n="condWorking">Tested - Working (100% Functional)</span>
+              </button>
+              <button type="button" class="cond-pill" id="cond-minor-wear" data-cond="Tested - Minor wear">
+                <span>⚡</span> <span data-i18n="condMinorWear">Tested - Minor Cosmetic Wear</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tested & Photographed Verification Checkbox Group -->
+          <div class="form-group verification-box">
+            <label class="form-label" data-i18n="testedCheckGroup">Verification & Evidence</label>
+            <div class="checkbox-line">
+              <label class="custom-check-wrap">
+                <input type="checkbox" id="part-check-tested" checked>
+                <span class="checkmark"></span>
+                <span class="check-text" data-i18n="checkTested">I have personally tested this component and confirm it works</span>
+              </label>
+            </div>
+            <div class="checkbox-line">
+              <label class="custom-check-wrap">
+                <input type="checkbox" id="part-check-photo">
+                <span class="checkmark"></span>
+                <span class="check-text" data-i18n="checkPhotographed">I photographed this actual physical part</span>
+              </label>
+            </div>
+            
+            <!-- Optional Photo Upload with Preview -->
+            <div class="photo-upload-section">
+              <label class="photo-upload-btn" for="part-photo-file">
+                📷 <span data-i18n="photoUploadLabel">Upload Part Photo (Optional)</span>
+              </label>
+              <input type="file" id="part-photo-file" accept="image/*" style="display: none;">
+              <div id="part-photo-preview" class="photo-preview-container" style="display: none;">
+                <img id="part-preview-img" src="" alt="Part preview">
+                <button type="button" id="btn-remove-photo" class="btn-remove-photo">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pricing Mode: Free vs Fixed -->
+          <div class="form-group">
+            <label class="form-label" data-i18n="pricingModeLabel">Listing Type & Price</label>
+            <div class="segmented-control" style="margin-bottom: 8px;">
+              <button type="button" class="segment-btn active" id="btn-price-free" data-i18n="priceFree">Free (Donate to Community)</button>
+              <button type="button" class="segment-btn" id="btn-price-fixed" data-i18n="priceFixed">Fixed Price (₹)</button>
+            </div>
+            <div id="fixed-price-wrap" style="display: none;">
+              <input type="number" id="part-price-input" class="custom-select" style="padding-right: 14px;" placeholder="Enter amount in Rs (e.g. 850)" min="1" step="50">
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="form-group">
+            <label class="form-label" for="part-location-input" data-i18n="locationLabel">Your Area / Location</label>
+            <input type="text" id="part-location-input" class="custom-select" style="padding-right: 14px;" placeholder="e.g. Chengalpattu, Tambaram, Guindy" value="Chengalpattu">
+          </div>
+
+          <!-- SAFETY GATES -->
+
+          <!-- 1. Battery Safety Gate (Mandatory for Battery) -->
+          <div id="battery-safety-panel" class="safety-gate-panel battery-panel" style="display: none;">
+            <div class="safety-gate-title">
+              <span>⚠️</span> <strong data-i18n="batteryWarningTitle">Mandatory Lithium Battery Safety Gate</strong>
+            </div>
+
+            <div class="battery-swelling-check">
+              <p class="battery-q" data-i18n="batterySwellingQuestion">Is the battery swollen, bulging, punctured, or leaking?</p>
+              <div class="battery-toggle-row">
+                <button type="button" class="battery-swelling-btn active safe" id="btn-swelling-no" data-i18n="batterySwellingNo">
+                  No, battery is physically intact and flat
+                </button>
+                <button type="button" class="battery-swelling-btn danger" id="btn-swelling-yes" data-i18n="batterySwellingYes">
+                  Yes, battery shows swelling / bulging / leakage
+                </button>
+              </div>
+            </div>
+
+            <!-- Hazard Blocking Alert (Shown if swollen) -->
+            <div id="battery-swollen-block" class="hazard-block-box" style="display: none;">
+              <p data-i18n="batterySwollenBlock">
+                ⚠️ HAZARD DETECTED: Swollen or leaking lithium batteries are severe fire hazards and CANNOT be reused. They must be routed directly to certified e-waste recyclers for neutralization.
+              </p>
+              <button type="button" id="btn-route-recycle" class="btn-route-recycle">
+                <span data-i18n="btnRouteRecycle">Find Certified Recyclers Now →</span>
+              </button>
+            </div>
+
+            <!-- Mandatory Checkboxes for Safe Battery -->
+            <div id="battery-mandatory-checks" class="battery-checks-list">
+              <label class="custom-check-wrap">
+                <input type="checkbox" id="battery-check-1">
+                <span class="checkmark"></span>
+                <span class="check-text" data-i18n="batteryCheck1">Battery is NOT swollen, leaking, or physically damaged</span>
+              </label>
+              <label class="custom-check-wrap">
+                <input type="checkbox" id="battery-check-2">
+                <span class="checkmark"></span>
+                <span class="check-text" data-i18n="batteryCheck2">Battery has been inspected by me or a certified technician</span>
+              </label>
+              <label class="custom-check-wrap">
+                <input type="checkbox" id="battery-check-3">
+                <span class="checkmark"></span>
+                <span class="check-text" data-i18n="batteryCheck3">I will hand it over ONLY to a verified repairer, in non-metal insulated packaging (not loose)</span>
+              </label>
+              <label class="custom-check-wrap">
+                <input type="checkbox" id="battery-check-4">
+                <span class="checkmark"></span>
+                <span class="check-text" data-i18n="batteryCheck4">I understand damaged batteries must go to a certified recycler, not be reused</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 2. Storage Data Safety Gate (Mandatory for SSD / HDD) -->
+          <div id="storage-safety-panel" class="safety-gate-panel storage-panel" style="display: none;">
+            <div class="safety-gate-title">
+              <span>🔒</span> <strong data-i18n="storageWipeTitle">Storage Security Verification (SSD / HDD)</strong>
+            </div>
+            <label class="custom-check-wrap">
+              <input type="checkbox" id="storage-wipe-check">
+              <span class="checkmark"></span>
+              <span class="check-text" data-i18n="storageWipeCheck">I have securely wiped / cryptographically erased all personal data from this drive</span>
+            </label>
+          </div>
+
+          <!-- 3. Safe Handling Protocol (All components) -->
+          <div id="part-safety-tips-box" class="handling-tips-box">
+            <div class="handling-tips-title">💡 <span data-i18n="handlingTipsTitle">Safe Component Handling Protocol</span></div>
+            <p data-i18n="handlingTips">Always ground yourself to prevent Electrostatic Discharge (ESD). Ensure host device is completely powered off and battery disconnected before component extraction.</p>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="button" id="btn-add-to-pool" class="btn-primary" style="margin-top: 14px;">
+            <span data-i18n="addPoolBtn">Add to Rescue Pool 🚀</span>
+          </button>
+        </div>
+
+        <!-- VIEW 2: "I NEED PARTS" (REPAIRER REQUEST) -->
+        <div id="view-need-parts" class="rescue-tab-view" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="req-shop-name" data-i18n="shopNameLabel">Shop Name / Repairer Identity</label>
+            <input type="text" id="req-shop-name" class="custom-select" style="padding-right: 14px;" placeholder="e.g. QuickFix Mobiles & Laptops" value="QuickFix Mobiles">
+            
+            <!-- Quick Select Partner Pills -->
+            <div class="quick-shops-row">
+              <span class="quick-shops-label" data-i18n="quickSelectProvider">Or select registered partner:</span>
+              <div class="quick-shop-pills" id="quick-shop-pills">
+                <button type="button" class="quick-shop-chip">EcoFix Tech Lab</button>
+                <button type="button" class="quick-shop-chip">Tambaram Green Mobile</button>
+                <button type="button" class="quick-shop-chip">ReNew Hub Chennai</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="req-component-type" data-i18n="formComponentType">Component Category</label>
+            <div class="select-wrapper">
+              <select id="req-component-type" class="custom-select">
+                <option value="">-- Select Component Needed --</option>
+              </select>
+              <div class="select-chevron">▼</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="req-spec" data-i18n="reqSpecLabel">Specification Needed</label>
+            <input type="text" id="req-spec" class="custom-select" style="padding-right: 14px;" placeholder="e.g. 8GB DDR4 RAM or 256GB SSD" value="8GB DDR4 RAM">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="req-budget" data-i18n="reqBudgetLabel">Maximum Budget (₹)</label>
+            <input type="number" id="req-budget" class="custom-select" style="padding-right: 14px;" placeholder="e.g. 1200" value="1200" min="0" step="50">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="req-area" data-i18n="locationLabel">Your Area / Location</label>
+            <input type="text" id="req-area" class="custom-select" style="padding-right: 14px;" placeholder="e.g. Chengalpattu" value="Chengalpattu">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="reqUrgencyLabel">Urgency Level</label>
+            <div class="urgency-pills-row">
+              <button type="button" class="urgency-pill active" data-urgency="Today" data-i18n="urgencyToday">Today (Urgent)</button>
+              <button type="button" class="urgency-pill" data-urgency="This week" data-i18n="urgencyWeek">This Week</button>
+              <button type="button" class="urgency-pill" data-urgency="Flexible" data-i18n="urgencyFlex">Flexible</button>
+            </div>
+          </div>
+
+          <!-- Sample Repairer Requests for Demo -->
+          <div class="sample-requests-box">
+            <div class="sample-req-title" data-i18n="sampleRequestsTitle">Or Try Sample Repairer Requests:</div>
+            <div class="sample-req-chips" id="sample-req-chips">
+              <!-- Dynamically populated chips -->
+            </div>
+          </div>
+
+          <button type="button" id="btn-find-matches" class="btn-primary" style="margin-top: 14px;">
+            <span data-i18n="findMatchesBtn">Find Matching Parts 🔍</span>
+          </button>
+
+          <!-- Match Results Section -->
+          <div id="match-results-section" class="match-results-section" style="display: none;">
+            <div class="match-results-header">
+              <h3 data-i18n="matchResultsTitle">Best Matched Components</h3>
+            </div>
+            <div id="match-cards-container" class="match-cards-container">
+              <!-- Top 3 Match Cards generated by matchComponents() -->
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 3: BROWSE RESCUE POOL -->
+        <div id="view-browse-pool" class="rescue-tab-view" style="display: none;">
+          <div class="pool-search-box">
+            <input type="text" id="pool-search-input" class="custom-select" style="padding-right: 14px;" placeholder="Search pool by spec, model, area (e.g. DDR4, Chengalpattu)...">
+          </div>
+
+          <div class="filter-scroll-wrapper" style="margin: 0 -18px 14px; padding: 4px 18px;">
+            <div class="filter-pills-row" id="pool-category-chips">
+              <!-- Category Chips: All, RAM, SSD, Screen, Battery, etc. -->
+            </div>
+          </div>
+
+          <div id="pool-listings-container" class="pool-listings-container">
+            <!-- Dynamically populated from state.rescuePool -->
+          </div>
+        </div>
+
       </section>
 
     </main>
@@ -496,6 +824,61 @@
             A confirmation SMS with map location & token has been reserved.
           </p>
           <button type="button" id="modal-done-btn" class="btn-primary" data-i18n="closeBtn">Done</button>
+        </div>
+
+    <!-- Component Handover Request Modal -->
+    <div id="part-request-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="part-modal-title">
+      <div class="modal-dialog">
+        <button id="part-modal-close-btn" class="modal-close-btn" aria-label="Close dialog">✕</button>
+
+        <!-- Request Form -->
+        <div id="part-modal-form-view">
+          <div class="modal-header">
+            <h3 id="part-modal-title" data-i18n="modalRequestTitle">Request Component Handover</h3>
+            <div id="part-modal-item-name" class="modal-provider-name">8GB DDR4 RAM</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="pickupScheduleLabel">Preferred Handover Date & Time</label>
+            <input type="date" id="part-request-date" class="custom-select" style="margin-bottom: 8px;">
+            <div class="slots-grid">
+              <div class="slot-radio-card selected" data-part-slot="morning">
+                <span data-i18n="slotMorning">Morning (9:30 AM - 1:00 PM)</span>
+                <span>☀️</span>
+              </div>
+              <div class="slot-radio-card" data-part-slot="afternoon">
+                <span data-i18n="slotAfternoon">Afternoon (1:00 PM - 5:00 PM)</span>
+                <span>🌤️</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="handling-tips-box" style="margin-bottom: 16px;">
+            <div class="handling-tips-title">🛡️ <span data-i18n="safetyReminderTitle">Handover Safety Reminders:</span></div>
+            <ul style="font-size: 11.5px; padding-left: 16px; color: #1E293B; line-height: 1.4;">
+              <li data-i18n="safetyReminder1">Inspect the part on delivery with anti-static protection.</li>
+              <li data-i18n="safetyReminder2">Verify battery integrity; never accept a bulging cell.</li>
+              <li data-i18n="safetyReminder3">Test within 48 hours for mutual circular assurance.</li>
+            </ul>
+          </div>
+
+          <button type="button" id="btn-confirm-part-request" class="btn-primary">
+            <span data-i18n="confirmRequestBtn">Confirm Part Reservation</span>
+          </button>
+        </div>
+
+        <!-- Request Success Confirmation -->
+        <div id="part-modal-success-view" class="booking-confirmed-card" style="display: none;">
+          <div class="success-check-icon">🤝</div>
+          <h3 data-i18n="requestConfirmedTitle">Component Reserved Successfully!</h3>
+          <p style="font-size: 13px; color: #64748B; margin-top: 4px;">
+            Your request has been dispatched to the donor/seller.
+          </p>
+          <div id="part-request-ref" class="booking-ref-badge">RCM-2026-7821</div>
+          <p style="font-size: 11.5px; color: #94A3B8; margin-bottom: 20px;">
+            Impact Dashboard has recorded the avoided electronic waste & repairer savings.
+          </p>
+          <button type="button" id="btn-part-done" class="btn-primary" data-i18n="closeBtn">Done</button>
         </div>
 
       </div>

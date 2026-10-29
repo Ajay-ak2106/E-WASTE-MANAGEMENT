@@ -127,6 +127,63 @@ ReLife Passport is pre-configured for instant zero-configuration static deployme
 
 ---
 
+---
+
+## 🧩 Component Rescue Matcher (New Circular Feature)
+
+One person's unusable smartphone or laptop often contains a perfectly functional RAM module, SSD, display panel, or charger that another repair urgently needs. The **Component Rescue Matcher** is a peer-to-peer circular parts pool connecting device owners and donor hardware with local repair technicians and workshops.
+
+### Key Capabilities
+1. **Three Seamless Entry Points**:
+   - **Header Navigation**: Dedicated `🧩 Component Rescue` button accessible at any stage.
+   - **Result Screen Callout**: When the recommendation engine flags a device as `DONATE` or `RECYCLE`, a prominent card guides users: *"Your device may contain reusable parts. List them on Component Rescue"*, pre-filling the donor form with the exact device model.
+   - **Connect Screen Teaser**: A live ticker strip displaying the count of verified parts available nearby.
+
+2. **Tab 1: "I Have Parts" (Donor / Seller Listing)**
+   - 10 component categories: RAM, SSD, HDD, Screen/Display, Battery, Charger, Motherboard, Keyboard, Camera, Speaker.
+   - Condition classification: *Tested - Working (100% Functional)* vs. *Tested - Minor Cosmetic Wear*.
+   - Tested badge verification and optional physical photo upload with live data URL preview.
+   - Flexible pricing: **Free (Community Donation)** or **Fixed Price (₹)**.
+   - **Mandatory Safety Gates**:
+     - **Lithium Battery Gate**: Proactively checks for battery swelling or physical damage. If swelling/damage is indicated, **the listing is strictly blocked** and the user is redirected to certified recyclers. If intact, all **4 mandatory safety declarations** must be verified before submission.
+     - **Storage Data Gate**: For SSD and HDD listings, requires explicit confirmation that all data has been cryptographically erased.
+     - **Anti-Static & ESD Handling**: Contextual handling advice per component (grounding, insulated packaging, power disconnection).
+
+3. **Tab 2: "I Need Parts" (Repairer Request & Matching Engine)**
+   - Quick-select chips from registered local workshops (e.g., *QuickFix Mobiles*, *EcoFix Tech Lab*).
+   - Urgency preferences: *Today*, *This week*, *Flexible*.
+   - **Algorithmic Matching Engine (`matchComponents`)**:
+     - Evaluates donor listings against requests using a weighted 100-point algorithm:
+       - **Spec Similarity**: Exact keyword match = 40 pts, Partial match = 20 pts
+       - **Budget Compliance**: Within budget or free = 25 pts (over-budget listings excluded)
+       - **Geographic Proximity**: Same area = 20 pts, Within 5 km = 15 pts
+       - **Hardware Condition**: Tested - Working = 10 pts, Minor wear = 5 pts
+       - **Verified Seller/Donor**: 5 pts
+     - Returns top 3 candidate matches sorted by score, displaying Match % (e.g. `95% Match`), compatibility reasons, and distance.
+   - **One-Click Part Request Modal**: Generates a tamper-evident reservation code (`RCM-2026-XXXX`) with scheduled handover timing and safety packaging instructions.
+
+4. **Tab 3: "Browse Rescue Pool"**
+   - Real-time search by keyword, spec, area, or device model.
+   - Category filter chips (RAM, SSD, Display, Battery, Charger, etc.).
+   - All user listings persist in `localStorage` alongside 12 pre-seeded Chennai/Chengalpattu listings.
+
+5. **Extended Community Impact Metrics**:
+   - **Parts Rescued**: Live count of individual modules saved from scrap burning.
+   - **Rupees Saved by Repairers**: Calculated as benchmark new-part MSRP minus rescued listing price.
+   - **Additional E-Waste Diverted**: Increments with every confirmed part match request.
+
+---
+
+## ⏱️ 30-Second Component Rescue Demo Script
+
+| Step | Action | What Happens / What to Say |
+| :--- | :--- | :--- |
+| **1. Donor Listing** | From Result Screen (or Header), open **Component Rescue** → "I have parts". Select *Dell Inspiron 3511*, *RAM*, spec `"8GB DDR4 3200MHz"`, tick *Tested*, price *₹900*, area *Chengalpattu*. Click **Add to Rescue Pool**. | *"A broken laptop that would otherwise go to scrap is now an active spare parts resource. The RAM immediately appears in the Rescue Pool."* |
+| **2. Repairer Match** | Switch to **"I need parts"** tab. Click sample chip: *QuickFix Mobiles (8GB DDR4 RAM, budget ₹1,500)*. Click **Find Matches**. | *"Our matching algorithm ranks the top 3 matches with a 95% Match score, showing 'Spec matches', 'Within budget', and 'Same area'. Tap 'Request this part' → confirm → Request ID `RCM-2026-XXXX` is generated, and the Impact Dashboard instantly records the parts rescued and repairer rupees saved!"* |
+| **3. Safety Gate Check** | Switch to "I have parts", select **Battery**, and click "Yes (Swollen/Damaged)". | *"Observe our safety gate: Swollen batteries are flagged as hazardous, blocked from reuse, and routed to certified recyclers. If intact, all 4 safety checkboxes must be verified."* |
+
+---
+
 ## ⏱️ 3-Minute Hackathon Demo Script
 
 | Time | Screen / Action | Talking Points & What to Demonstrate |

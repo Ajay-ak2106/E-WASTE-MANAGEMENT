@@ -522,6 +522,251 @@ const RELIFE_DATA = {
     ]
   },
 
+  // Component Categories for Component Rescue Matcher
+  componentCategories: [
+    { id: "ram", name: "RAM / Memory", icon: "🧠" },
+    { id: "ssd", name: "Solid State Drive (SSD)", icon: "💾" },
+    { id: "hdd", name: "Hard Disk Drive (HDD)", icon: "💽" },
+    { id: "screen", name: "Screen / Display", icon: "🖥️" },
+    { id: "battery", name: "Battery Pack", icon: "🔋" },
+    { id: "charger", name: "Charger / Power Adapter", icon: "🔌" },
+    { id: "motherboard", name: "Motherboard / Logic Board", icon: "🧩" },
+    { id: "keyboard", name: "Keyboard Assembly", icon: "⌨️" },
+    { id: "camera", name: "Camera Module", icon: "📷" },
+    { id: "speaker", name: "Speaker Module", icon: "🔊" }
+  ],
+
+  // Estimated New-Part Benchmark Prices for Repairer Savings Calculation (in Rs)
+  estimatedNewPartPrices: {
+    ram: 2400,
+    ssd: 3200,
+    hdd: 2800,
+    screen: 3800,
+    battery: 2100,
+    charger: 1600,
+    motherboard: 6500,
+    keyboard: 1500,
+    camera: 1400,
+    speaker: 900
+  },
+
+  // Seeded Realistic Rescue Pool (12 items)
+  seedRescuePool: [
+    {
+      id: "part_1",
+      componentType: "ram",
+      spec: "8GB DDR4 3200MHz SODIMM RAM",
+      condition: "Tested - Working",
+      sourceDevice: "Dell Inspiron 3511",
+      price: 900,
+      area: "Chengalpattu",
+      isTested: true,
+      isPhotographed: true,
+      sellerName: "Karthik R. (Individual)",
+      verifiedSeller: true,
+      dateListed: "28 Oct 2026"
+    },
+    {
+      id: "part_2",
+      componentType: "ssd",
+      spec: "256GB M.2 NVMe PCIe SSD (SanDisk)",
+      condition: "Tested - Working",
+      sourceDevice: "HP 15s (Intel Core i3)",
+      price: 1100,
+      area: "Tambaram",
+      isTested: true,
+      isPhotographed: true,
+      wipedStorage: true,
+      sellerName: "Praveen Kumar",
+      verifiedSeller: true,
+      dateListed: "27 Oct 2026"
+    },
+    {
+      id: "part_3",
+      componentType: "charger",
+      spec: "Original 65W Round-Pin Laptop Charger Adapter",
+      condition: "Tested - Working",
+      sourceDevice: "Lenovo IdeaPad 3",
+      price: 0,
+      area: "Guindy",
+      isTested: true,
+      isPhotographed: false,
+      sellerName: "Green Student Circle",
+      verifiedSeller: true,
+      dateListed: "29 Oct 2026"
+    },
+    {
+      id: "part_4",
+      componentType: "keyboard",
+      spec: "Full Chiclet Keyboard with NumPad",
+      condition: "Tested - Working",
+      sourceDevice: "HP 15s (Intel Core i3)",
+      price: 650,
+      area: "Chromepet",
+      isTested: true,
+      isPhotographed: true,
+      sellerName: "Vasanth Tech Fix",
+      verifiedSeller: false,
+      dateListed: "26 Oct 2026"
+    },
+    {
+      id: "part_5",
+      componentType: "screen",
+      spec: "6.43-inch FHD+ 90Hz AMOLED Display Panel",
+      condition: "Tested - Minor wear",
+      sourceDevice: "Redmi Note 11",
+      price: 1200,
+      area: "Chengalpattu",
+      isTested: true,
+      isPhotographed: true,
+      sellerName: "Murali (Self-Repairer)",
+      verifiedSeller: true,
+      dateListed: "29 Oct 2026"
+    },
+    {
+      id: "part_6",
+      componentType: "battery",
+      spec: "6000mAh OEM Li-Po Battery Pack (Model EB-BM315ABY)",
+      condition: "Tested - Working",
+      sourceDevice: "Samsung Galaxy M31",
+      price: 600,
+      area: "Tambaram",
+      isTested: true,
+      isPhotographed: true,
+      safetyChecked: true,
+      batterySafetyChecked: true,
+      sellerName: "Tambaram Green Mobile Hospital",
+      verifiedSeller: true,
+      dateListed: "28 Oct 2026"
+    },
+    {
+      id: "part_7",
+      componentType: "ram",
+      spec: "8GB DDR4 2666MHz Crucial Laptop RAM",
+      condition: "Tested - Working",
+      sourceDevice: "Acer Aspire 5",
+      price: 850,
+      area: "Velachery",
+      isTested: true,
+      isPhotographed: true,
+      sellerName: "Anand S.",
+      verifiedSeller: true,
+      dateListed: "25 Oct 2026"
+    },
+    {
+      id: "part_8",
+      componentType: "ssd",
+      spec: "512GB Kingston 2.5-inch SATA III SSD",
+      condition: "Tested - Working",
+      sourceDevice: "Dell Inspiron 3511",
+      price: 1500,
+      area: "OMR Chennai",
+      isTested: true,
+      isPhotographed: true,
+      wipedStorage: true,
+      sellerName: "OMR Tech Hub",
+      verifiedSeller: true,
+      dateListed: "27 Oct 2026"
+    },
+    {
+      id: "part_9",
+      componentType: "camera",
+      spec: "64MP Main + 8MP Ultra-Wide Dual Camera Module",
+      condition: "Tested - Working",
+      sourceDevice: "OnePlus Nord CE 2 5G",
+      price: 750,
+      area: "Guindy",
+      isTested: true,
+      isPhotographed: false,
+      sellerName: "ReNew Hub Chennai",
+      verifiedSeller: true,
+      dateListed: "26 Oct 2026"
+    },
+    {
+      id: "part_10",
+      componentType: "speaker",
+      spec: "Internal Dual Stereo Speaker Set with Cable",
+      condition: "Tested - Working",
+      sourceDevice: "ASUS VivoBook 14",
+      price: 400,
+      area: "Chengalpattu",
+      isTested: true,
+      isPhotographed: true,
+      sellerName: "Senthil Kumar",
+      verifiedSeller: false,
+      dateListed: "28 Oct 2026"
+    },
+    {
+      id: "part_11",
+      componentType: "hdd",
+      spec: "1TB Seagate 5400RPM 2.5-inch Laptop HDD",
+      condition: "Tested - Working",
+      sourceDevice: "Lenovo IdeaPad 3",
+      price: 700,
+      area: "Tambaram",
+      isTested: true,
+      isPhotographed: true,
+      wipedStorage: true,
+      sellerName: "TechRecycle Tambaram",
+      verifiedSeller: true,
+      dateListed: "24 Oct 2026"
+    },
+    {
+      id: "part_12",
+      componentType: "motherboard",
+      spec: "Core i3 11th Gen Motherboard (Tested Bios Boot OK)",
+      condition: "Tested - Working",
+      sourceDevice: "Dell Inspiron 3511",
+      price: 2800,
+      area: "Maraimalai Nagar",
+      isTested: true,
+      isPhotographed: true,
+      sellerName: "Maraimalai Circular Spares",
+      verifiedSeller: true,
+      dateListed: "29 Oct 2026"
+    }
+  ],
+
+  // Sample Repairer Requests for Quick Demonstration
+  sampleRepairerRequests: [
+    {
+      id: "req_demo_1",
+      shopName: "QuickFix Mobiles & Laptops",
+      componentType: "ram",
+      spec: "8GB DDR4 RAM",
+      maxBudget: 1200,
+      area: "Chengalpattu",
+      urgency: "Today"
+    },
+    {
+      id: "req_demo_2",
+      shopName: "EcoFix Chengalpattu Tech Lab",
+      componentType: "ssd",
+      spec: "256GB SSD",
+      maxBudget: 1400,
+      area: "Chengalpattu",
+      urgency: "This week"
+    },
+    {
+      id: "req_demo_3",
+      shopName: "Tambaram Green Mobile Hospital",
+      componentType: "screen",
+      spec: "Redmi Note 11 AMOLED Display",
+      maxBudget: 1500,
+      area: "Tambaram",
+      urgency: "Today"
+    },
+    {
+      id: "req_demo_4",
+      shopName: "ReNew Hub Chennai",
+      componentType: "charger",
+      spec: "65W Laptop Charger",
+      maxBudget: 600,
+      area: "Guindy",
+      urgency: "Flexible"
+    }
+  ],
+
   // Bilingual UI Translations: English & Tamil
   translations: {
     en: {
@@ -642,7 +887,103 @@ const RELIFE_DATA = {
       totalEwasteLabel: "E-Waste Avoided (kg)",
       totalCo2Label: "CO₂ Avoided (kg)",
       resetDemoBtn: "Reset Demo Stats",
-      startOverBtn: "Start New Assessment 🔄"
+      startOverBtn: "Start New Assessment 🔄",
+
+      // Component Rescue Matcher
+      navRescueBtn: "🧩 Component Rescue",
+      rescueTitle: "Component Rescue Matcher",
+      rescueSubtitle: "Extend circular lifespan by matching tested reusable parts with local repairers",
+      rescueBackToFlow: "← Back to Assessment Flow",
+      tabHaveParts: "I Have Parts",
+      tabNeedParts: "I Need Parts",
+      tabBrowsePool: "Browse Rescue Pool",
+      
+      // Result & Connect Entry Points
+      resultRescueCardTitle: "Your device contains reusable components",
+      resultRescueCardDesc: "Even if unrepairable, internal RAM, SSD, screen or charger can restore another device. List them in the Rescue Pool.",
+      resultRescueBtn: "List Spare Parts on Rescue Pool 🧩",
+      connectTeaserTitle: "Component Rescue Pool",
+      connectTeaserDesc: "tested spare parts available nearby from local donors and repairers.",
+      connectTeaserBtn: "Open Component Rescue →",
+
+      // Tab 1: I Have Parts
+      formSourceDevice: "Source Device",
+      formComponentType: "Component Category",
+      formSpec: "Technical Specification / Model",
+      formSpecPlaceholder: "e.g. 8GB DDR4 3200MHz SODIMM or 256GB NVMe SSD",
+      formCondition: "Tested Condition",
+      condWorking: "Tested - Working (100% Functional)",
+      condMinorWear: "Tested - Minor Cosmetic Wear",
+      testedCheckGroup: "Verification & Evidence",
+      checkTested: "I have personally tested this component and confirm it works",
+      checkPhotographed: "I photographed this actual physical part",
+      photoUploadLabel: "Component Photo (Optional)",
+      photoUploadHelp: "Upload an image preview of the component",
+      pricingModeLabel: "Listing Type & Price",
+      priceFree: "Free (Donate to Community)",
+      priceFixed: "Fixed Price (₹)",
+      pricePlaceholder: "Enter amount in Rs (e.g. 850)",
+      locationLabel: "Your Area / Location",
+      locationPlaceholder: "e.g. Chengalpattu, Tambaram, Guindy",
+      addPoolBtn: "Add to Rescue Pool 🚀",
+
+      // Safety Gates
+      batteryWarningTitle: "Mandatory Lithium Battery Safety Gate",
+      batterySwellingQuestion: "Is the battery swollen, bulging, punctured, or leaking?",
+      batterySwellingNo: "No, battery is physically intact and flat",
+      batterySwellingYes: "Yes, battery shows swelling / bulging / leakage",
+      batterySwollenBlock: "⚠️ HAZARD DETECTED: Swollen or leaking lithium batteries are severe fire hazards and CANNOT be reused. They must be routed directly to certified e-waste recyclers for neutralization.",
+      btnRouteRecycle: "Find Certified Recyclers Now →",
+      batteryCheck1: "Battery is NOT swollen, leaking, or physically damaged",
+      batteryCheck2: "Battery has been inspected by me or a certified technician",
+      batteryCheck3: "I will hand it over ONLY to a verified repairer, in non-metal insulated packaging (not loose)",
+      batteryCheck4: "I understand damaged batteries must go to a certified recycler, not be reused",
+      storageWipeTitle: "Storage Security Verification (SSD / HDD)",
+      storageWipeCheck: "I have securely wiped / cryptographically erased all personal data from this drive",
+      handlingTipsTitle: "Safe Component Handling Protocol",
+      handlingTips: "Always ground yourself to prevent Electrostatic Discharge (ESD). Ensure host device is completely powered off and battery disconnected before component extraction.",
+
+      // Tab 2: I Need Parts
+      shopNameLabel: "Shop Name / Repairer Identity",
+      shopNamePlaceholder: "e.g. QuickFix Mobiles & Laptops or select provider",
+      quickSelectProvider: "Or select registered partner:",
+      reqSpecLabel: "Specification Needed",
+      reqSpecPlaceholder: "e.g. 8GB DDR4 RAM or 256GB SSD",
+      reqBudgetLabel: "Maximum Budget (₹)",
+      reqUrgencyLabel: "Urgency Level",
+      urgencyToday: "Today (Urgent)",
+      urgencyWeek: "This Week",
+      urgencyFlex: "Flexible",
+      findMatchesBtn: "Find Matching Parts 🔍",
+      sampleRequestsTitle: "Or Try Sample Repairer Requests:",
+
+      // Matching Engine Results
+      matchResultsTitle: "Best Matched Components",
+      matchScoreLabel: "Match Score",
+      matchReasonsLabel: "Match Highlights:",
+      requestPartBtn: "Request This Part 🤝",
+      noMatchesFound: "No parts matched your exact budget and component criteria. Browse the full pool below or adjust your filters.",
+
+      // Part Request Modal
+      modalRequestTitle: "Request Component Handover",
+      pickupScheduleLabel: "Preferred Handover Date & Time",
+      confirmRequestBtn: "Confirm Part Reservation",
+      requestConfirmedTitle: "Component Reserved Successfully!",
+      requestIdLabel: "Rescue Request ID",
+      safetyReminderTitle: "Handover Safety Reminders:",
+      safetyReminder1: "Inspect the part on delivery with anti-static protection.",
+      safetyReminder2: "Verify battery integrity; never accept a bulging cell.",
+      safetyReminder3: "Test within 48 hours for mutual circular assurance.",
+
+      // Pool Browse View
+      poolSearchPlaceholder: "Search pool by spec, model, area (e.g. DDR4, Chengalpattu)...",
+      poolFilterAll: "All Components",
+      poolEmptyText: "No components match the selected filter.",
+      listingAddedSuccess: "Component successfully added to Rescue Pool!",
+      
+      // Extended Impact
+      partsRescuedLabel: "Parts Rescued from Scrap",
+      repairerSavedLabel: "Repairer Savings (₹)"
     },
 
     ta: {
@@ -763,7 +1104,103 @@ const RELIFE_DATA = {
       totalEwasteLabel: "தவிர்க்கப்பட்ட மின்-கழிவு (கிலோ)",
       totalCo2Label: "தவிர்க்கப்பட்ட CO₂ வாயு (கிலோ)",
       resetDemoBtn: "டெமோ புள்ளிவிவரங்களை மீட்டமை",
-      startOverBtn: "புதிய சாதனத்தை சோதிக்க 🔄"
+      startOverBtn: "புதிய சாதனத்தை சோதிக்க 🔄",
+
+      // Component Rescue Matcher
+      navRescueBtn: "🧩 உதிரிபாக மீட்பு",
+      rescueTitle: "உதிரிபாக மீட்பு & இணைப்பு",
+      rescueSubtitle: "பரிசோதிக்கப்பட்ட உதிரிபாகங்களை உள்ளூர் பழுதுபார்ப்பவர்களுடன் இணைத்து மறுபயன்பாட்டை நீட்டிக்கவும்",
+      rescueBackToFlow: "← பாஸ்போர்ட் மதிப்பீட்டிற்கு திரும்பு",
+      tabHaveParts: "பாகங்கள் உள்ளன",
+      tabNeedParts: "பாகங்கள் தேவை",
+      tabBrowsePool: "உதிரிபாகக் குளம்",
+
+      // Result & Connect Entry Points
+      resultRescueCardTitle: "உங்கள் சாதனத்தில் பயன்படக்கூடிய உதிரிபாகங்கள் உள்ளன",
+      resultRescueCardDesc: "சாதனத்தை சரிசெய்ய முடியாவிட்டாலும் ரேம், எஸ்எஸ்டி, திரை அல்லது சார்ஜர் மற்றொரு சாதனத்தை காப்பாற்ற உதவும். அவற்றை மீட்புக் குளத்தில் பட்டியலிடுங்கள்.",
+      resultRescueBtn: "மீட்புக் குளத்தில் பட்டியலிடுங்கள் 🧩",
+      connectTeaserTitle: "உதிரிபாக மீட்புக் குளம்",
+      connectTeaserDesc: "பரிசோதிக்கப்பட்ட உதிரிபாகங்கள் உங்கள் பகுதியில் உள்ளன.",
+      connectTeaserBtn: "உதிரிபாக மீட்பைத் திறக்க →",
+
+      // Tab 1: I Have Parts
+      formSourceDevice: "சாதன மாதிரி",
+      formComponentType: "உதிரிபாக வகை",
+      formSpec: "தொழில்நுட்ப விவரம் / மாடல்",
+      formSpecPlaceholder: "எ.கா. 8GB DDR4 3200MHz RAM அல்லது 256GB SSD",
+      formCondition: "பரிசோதனை நிலை",
+      condWorking: "பரிசோதிக்கப்பட்டது - சிறப்பாக இயங்குகிறது",
+      condMinorWear: "பரிசோதிக்கப்பட்டது - லேசான தேய்மானம்",
+      testedCheckGroup: "உறுதிப்படுத்தல் & சான்று",
+      checkTested: "இந்த பாகத்தை நான் நேரில் சோதித்து செயல்படுவதை உறுதி செய்துள்ளேன்",
+      checkPhotographed: "இந்த உண்மை பாகத்தை புகைப்படம் எடுத்துள்ளேன்",
+      photoUploadLabel: "பாகத்தின் புகைப்படம் (விருப்பத்தேர்வு)",
+      photoUploadHelp: "பாகத்தின் படத்தை பதிவேற்றலாம்",
+      pricingModeLabel: "விலை வகை",
+      priceFree: "இலவசம் (சமூகத்திற்கு நன்கொடை)",
+      priceFixed: "குறிப்பிட்ட விலை (₹)",
+      pricePlaceholder: "விலையை உள்ளிடவும் (எ.கா. 850)",
+      locationLabel: "உங்கள் பகுதி / இருப்பிடம்",
+      locationPlaceholder: "எ.கா. செங்கல்பட்டு, தாம்பரம், கிண்டி",
+      addPoolBtn: "மீட்புக் குளத்தில் சேர் 🚀",
+
+      // Safety Gates
+      batteryWarningTitle: "கட்டாய லித்தியம் பேட்டரி பாதுகாப்பு விதிமுறை",
+      batterySwellingQuestion: "பேட்டரி வீங்கியுள்ளதா, கசிவு அல்லது சேதம் உள்ளதா?",
+      batterySwellingNo: "இல்லை, பேட்டரி தட்டையாகவும் சேதமின்றியும் உள்ளது",
+      batterySwellingYes: "ஆம், பேட்டரி வீங்கியுள்ளது / கசிவு உள்ளது",
+      batterySwollenBlock: "⚠️ ஆபத்து எச்சரிக்கை: வீங்கிய அல்லது கசியும் லித்தியம் பேட்டரிகள் தீ விபத்தை ஏற்படுத்தலாம். இவற்றை மறுபயன்பாடு செய்ய முடியாது! சான்றளிக்கப்பட்ட மறுசுழற்சி மையத்திற்கு மட்டுமே அனுப்ப வேண்டும்.",
+      btnRouteRecycle: "மறுசுழற்சி மையங்களைக் காண்க →",
+      batteryCheck1: "பேட்டரி வீங்கவில்லை, கசியவில்லை மற்றும் சேதமடையவில்லை",
+      batteryCheck2: "பேட்டரியை நானும் தொழில்நுட்ப வல்லுநரும் சோதித்துள்ளோம்",
+      batteryCheck3: "சரிபார்க்கப்பட்ட பழுதுபார்ப்பவரிடம் மட்டுமே பாதுகாப்பான காப்பிடப்பட்ட பெட்டியில் தருவேன்",
+      batteryCheck4: "சேதமடைந்த பேட்டரி மறுசுழற்சிக்கு மட்டுமே செல்ல வேண்டும் என்பதை அறிவேன்",
+      storageWipeTitle: "சேமிப்பக தரவு பாதுகாப்பு உறுதி (SSD / HDD)",
+      storageWipeCheck: "இந்த டிரைவில் உள்ள அனைத்து தனிப்பட்ட தரவுகளையும் முழுமையாக அழித்துவிட்டேன்",
+      handlingTipsTitle: "பாதுகாப்பான கையாளுதல் முறை",
+      handlingTips: "மின்னழுத்த பாதிப்பைத் தவிர்க்க மின்சாரம் மற்றும் பேட்டரியை முழுமையாக துண்டித்த பின்பே பாகங்களைக் கழற்றவும்.",
+
+      // Tab 2: I Need Parts
+      shopNameLabel: "கடை பெயர் / பழுதுபார்ப்பவர் விவரம்",
+      shopNamePlaceholder: "எ.கா. QuickFix Mobiles அல்லது கடையைத் தேர்வு செய்க",
+      quickSelectProvider: "அல்லது பதிவுசெய்த கடையைத் தேர்வு செய்க:",
+      reqSpecLabel: "தேவைப்படும் விவரம்",
+      reqSpecPlaceholder: "எ.கா. 8GB DDR4 RAM அல்லது 256GB SSD",
+      reqBudgetLabel: "அதிகபட்ச பட்ஜெட் (₹)",
+      reqUrgencyLabel: "அவசர நிலை",
+      urgencyToday: "இன்றே தேவை",
+      urgencyWeek: "இந்த வாரம்",
+      urgencyFlex: "எப்போது வேண்டுமானாலும்",
+      findMatchesBtn: "பொருத்தமான பாகங்களைத் தேடு 🔍",
+      sampleRequestsTitle: "அல்லது மாதிரித் தேவைகளை சோதிக்கவும்:",
+
+      // Matching Engine Results
+      matchResultsTitle: "மிகப் பொருத்தமான உதிரிபாகங்கள்",
+      matchScoreLabel: "பொருத்த மதிப்பெண்",
+      matchReasonsLabel: "பொருத்தக் காரணங்கள்:",
+      requestPartBtn: "இந்த பாகத்தைக் கோருக 🤝",
+      noMatchesFound: "உங்கள் பட்ஜெட்டுக்கு ஏற்ற பாகங்கள் கிடைக்கவில்லை. கீழே முழு குளத்தையும் பார்வையிடவும்.",
+
+      // Part Request Modal
+      modalRequestTitle: "உதிரிபாக கோரிக்கை முன்பதிவு",
+      pickupScheduleLabel: "விரும்பும் ஒப்படைப்பு தேதி & நேரம்",
+      confirmRequestBtn: "பாக முன்பதிவை உறுதி செய்க",
+      requestConfirmedTitle: "உதிரிபாகம் வெற்றிகரமாக முன்பதிவு செய்யப்பட்டது!",
+      requestIdLabel: "கோரிக்கை எண்",
+      safetyReminderTitle: "பாதுகாப்பு நினைவூட்டல்கள்:",
+      safetyReminder1: "பாகத்தைப் பெறும்போது சோதித்துக் கொள்ளுங்கள்.",
+      safetyReminder2: "பேட்டரி வீங்கியிருந்தால் வாங்க வேண்டாம்.",
+      safetyReminder3: "48 மணி நேரத்திற்குள் சோதித்து இயங்குவதை உறுதி செய்யுங்கள்.",
+
+      // Pool Browse View
+      poolSearchPlaceholder: "விவரம், மாதிரி, பகுதி மூலம் தேடுக (எ.கா. DDR4, செங்கல்பட்டு)...",
+      poolFilterAll: "அனைத்து பாகங்களும்",
+      poolEmptyText: "தேர்ந்தெடுக்கப்பட்ட வகைக்கு பாகங்கள் இல்லை.",
+      listingAddedSuccess: "பாகம் வெற்றிகரமாக மீட்புக் குளத்தில் சேர்க்கப்பட்டது!",
+
+      // Extended Impact
+      partsRescuedLabel: "குப்பையிலிருந்து மீட்கப்பட்ட பாகங்கள்",
+      repairerSavedLabel: "பழுதுபார்ப்பவர்கள் சேமித்த ரூபாய் (₹)"
     }
   }
 };
