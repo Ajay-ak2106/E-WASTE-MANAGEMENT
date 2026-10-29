@@ -174,6 +174,68 @@ One person's unusable smartphone or laptop often contains a perfectly functional
 
 ---
 
+## 📍 E-Waste Journey Tracker (Circular Chain of Custody)
+
+Every old device receives a unique auto-incremented Circular ID (e.g. `EW-1001`, `EW-1005`) and an optical QR code. The device's entire lifecycle is tracked through **5 verifiable stages**:
+
+$$\text{Registered} \longrightarrow \text{Collected} \longrightarrow \text{Inspected} \longrightarrow \text{Outcome Recorded} \longrightarrow \text{Completed - Verified}$$
+
+Only audit-verified outcomes count toward the **Sustainability Dashboard**, preserving absolute data integrity.
+
+### Role-by-Role Overview (Demo Roles)
+> *Note: Production systems would use cryptographic multi-party authorization; demo mode features an instant role switcher.*
+
+1. **👤 Device Owner**:
+   - Registers device with hardware condition, problem description, locality, and mandatory data wipe certification.
+   - Generates a **Circular Passport & QR Code**.
+   - Views downloadable/printable asset labels for physical device tagging.
+   - Schedules handover via **Direct Drop-off** at verified circular centers or **Doorstep Pickup**.
+   - Tracks real-time status in the **"My Devices"** tab with a 5-segment progress bar.
+
+2. **🚚 Collection Partner**:
+   - Views the real-time queue of pending pickups.
+   - Scans or enters the device ID (simulated camera viewfinder or manual input).
+   - Records collector credentials, organization, timestamp, and location.
+   - Advances status to **Collected & In Transit** with an automated audit log entry.
+
+3. **🔬 Repair & Inspection Partner**:
+   - Conducts physical hardware diagnostics: Power & Boot Test (Boots into BIOS/OS vs. Dead).
+   - 8-Module Component Checklist: Screen, Battery, RAM, SSD/Storage, Motherboard, Power Port, Keyboard, Camera.
+   - **Rule-Based Circular Pathway Auto-Suggestion**:
+     - *Boots + key modules working* $\rightarrow$ **Repair**
+     - *Boots + working + mature age* $\rightarrow$ **Refurbish**
+     - *Dead motherboard + valuable components working* $\rightarrow$ **Component Recovery**
+     - *Extensive damage* $\rightarrow$ **Recycle**
+   - **Battery Safety Gate**: Flags damaged/swollen lithium batteries with a high-visibility hazard alert and strictly forces battery recycling.
+   - **Component Recovery Bridge**: One-click **"List working parts on Component Rescue"** shortcut pre-fills donor listings.
+   - **Outcome Recording & Evidence**: Records final circular outcome, handling entity, costs, and attaches receipts/invoices with image data preview.
+   - **Audit Verification Action**: Verifies chain-of-custody evidence, elevating status to **Completed - Verified**.
+
+4. **🌱 Sustainability Dashboard (Verified Outcomes Only)**:
+   - Completely decoupled from preliminary flow estimates; counts *only audit-verified devices*.
+   - Displays separate counts for Repaired, Refurbished, Donated, Parts Rescued, and Recycled.
+   - Dynamic SVG Donut Chart illustrating outcome distribution.
+   - Honest **Verified vs. Pending** comparison counter cards.
+   - Quantified Financial Impact (actual user savings) and Ecological Abatement ($CO_2$ & e-waste kg).
+   - Shareable `#track=EW-XXXX` direct hash URLs for instant QR lookup.
+
+### ➕ Custom Device Models & Categories
+Users can add any smartphone or laptop model not listed in the default catalog using the `+ Add Custom Model` button on Screen 1. The custom model persists in `localStorage`, integrates seamlessly with repair economics benchmarking, and is immediately available across diagnosis and journey tracking.
+
+---
+
+## ⏱️ 60-Second E-Waste Journey Tracker Demo Script
+
+| Step | Action | What to Say / What to Show |
+| :--- | :--- | :--- |
+| **1. Owner Registration** | Tap **📍 Tracker** in header (or 'Register this device' from Result Screen). Click **+ Register Device**. Enter Dell Inspiron 15, 'Not working', 'Depleted battery', confirm data wipe, and click **Generate Device Passport**. | *"The owner assigns unique circular asset ID `EW-1005` with a generated QR code and printable asset tag. Under My Devices, the progress bar shows Stage 1: Registered."* |
+| **2. Collection Handover** | Switch top role to **Collection Partner**. Click on pending pickup `EW-1005` (or tap '📷 Scan QR' to simulate optical scanning). Click **Confirm Collection & Handover**. | *"The collection partner logs custody with driver name, timestamp, and non-metal packing. Status updates to 'Collected' in the audit trail."* |
+| **3. Hardware Inspection** | Switch role to **Repair-Inspection Partner**. Select `EW-1005`. Set Boot: 'Does not boot'. Mark RAM & SSD as 'Working', Battery as 'Damaged'. | *"Notice two automated rules trigger: (1) System suggests Component Recovery because valuable RAM and SSD are functional; (2) Battery Hazard alert flags the swollen battery and forces battery recycling. Tap 'List working parts on Component Rescue' to bridge the modules directly into the circular spare parts pool!"* |
+| **4. Outcome & Evidence** | In Outcome form, select 'Parts recovered for reuse', choose 'EcoFix Tech Lab', upload a test certificate, and click **Record Outcome**, then click **Verify Outcome & Impact ✅**. | *"The partner records the outcome and attaches verifiable evidence. Upon clicking 'Verify', the device achieves 'Completed - Verified' status."* |
+| **5. Sustainability Dashboard** | Switch to the **Sustainability Dashboard** tab. Check verified counts and SVG donut chart. Test URL hash by visiting `#track=EW-1005`. | *"Notice that only verified outcomes are counted here. The dynamic summary updates honestly, savings and carbon offsets reflect, and the #track=EW-1005 link allows anyone scanning the physical QR code to inspect the complete 5-stage timeline!"* |
+
+---
+
 ## ⏱️ 30-Second Component Rescue Demo Script
 
 | Step | Action | What Happens / What to Say |

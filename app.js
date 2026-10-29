@@ -38,7 +38,31 @@
     partPricingMode: 'free',
     batterySwellingReported: false,
     selectedPoolCategory: 'all',
-    selectedPartForRequest: null
+    selectedPartForRequest: null,
+
+    // Journey Tracker & Custom Models State
+    customDevices: loadCustomDevices(),
+    trackedDevices: loadTrackedDevices(),
+    activeTrackerTab: 'my-devices', // 'my-devices' | 'track-by-id' | 'partner-console' | 'sustainability-dashboard'
+    activeRole: 'owner', // 'owner' | 'collector' | 'repairer'
+    activeTrackedDevice: null,
+    activeHandoverMode: 'dropoff',
+    activeInspectionDevice: null,
+    activeInspectionBoot: 'boots',
+    inspectionChecks: {
+      screen: 'working',
+      battery: 'working',
+      ram: 'working',
+      storage: 'working',
+      motherboard: 'working',
+      charger_port: 'working',
+      keyboard: 'working',
+      camera: 'working'
+    },
+    inspectionSuggestedPathway: null,
+    inspectionForcedBatteryRecycle: false,
+    outcomeEvidenceDataUrl: null,
+    outcomeEvidenceFileName: null
   };
 
   // DOM Element References
@@ -46,6 +70,7 @@
     // Header & Navigation
     backBtn: document.getElementById('back-btn'),
     langToggleBtn: document.getElementById('lang-toggle-btn'),
+    navTrackerBtn: document.getElementById('nav-tracker-btn'),
     navRescueBtn: document.getElementById('nav-rescue-btn'),
     progressContainer: document.querySelector('.progress-container'),
     progressFill: document.getElementById('progress-fill'),
@@ -54,10 +79,12 @@
     currentStepNum: document.getElementById('current-step-num'),
     screens: document.querySelectorAll('.screen'),
     screenRescue: document.getElementById('screen-rescue'),
+    screenTracker: document.getElementById('screen-tracker'),
 
     // Screen 1: Inputs
     btnTypePhone: document.getElementById('type-phone'),
     btnTypeLaptop: document.getElementById('type-laptop'),
+    btnAddCustomModel: document.getElementById('btn-add-custom-model'),
     deviceModelSelect: document.getElementById('device-model'),
     ageSlider: document.getElementById('device-age'),
     ageDisplay: document.getElementById('age-display-badge'),
@@ -78,6 +105,8 @@
     recReason: document.getElementById('rec-reason-text'),
     resultRescueCard: document.getElementById('result-rescue-card'),
     btnResultToRescue: document.getElementById('btn-result-to-rescue'),
+    resultTrackerCard: document.getElementById('result-tracker-card'),
+    btnResultToTracker: document.getElementById('btn-result-to-tracker'),
     snapshotModel: document.getElementById('snapshot-model-name'),
     snapshotIssue: document.getElementById('snapshot-issue-name'),
     snapshotAge: document.getElementById('snapshot-age-val'),
@@ -105,6 +134,7 @@
     certDateDisplay: document.getElementById('cert-date-val'),
     certDeviceDisplay: document.getElementById('cert-device-val'),
     qrcodeContainer: document.getElementById('qrcode-container'),
+    btnCertToTracker: document.getElementById('btn-cert-to-tracker'),
     btnGoToConnect: document.getElementById('btn-go-to-connect'),
 
     // Screen 5: Connect & Impact
@@ -205,20 +235,167 @@
     modalDoneBtn: document.getElementById('modal-done-btn'),
 
     // Toast
-    toast: document.getElementById('toast-notice')
+    toast: document.getElementById('toast-notice'),
+
+    // Journey Tracker Screen Controls
+    trackerRoleSelector: document.getElementById('tracker-role-selector'),
+    tabTrackerMyDevices: document.getElementById('tab-tracker-my-devices'),
+    tabTrackerTrackById: document.getElementById('tab-tracker-track-by-id'),
+    tabTrackerConsole: document.getElementById('tab-tracker-console'),
+    tabTrackerSustainability: document.getElementById('tab-tracker-sustainability'),
+    viewMyDevices: document.getElementById('view-my-devices'),
+    viewTrackById: document.getElementById('view-track-by-id'),
+    viewPartnerConsole: document.getElementById('view-partner-console'),
+    viewSustainabilityDashboard: document.getElementById('view-sustainability-dashboard'),
+
+    // Tab 1: My Devices
+    btnOpenRegisterModal: document.getElementById('btn-open-register-modal'),
+    myDevicesCount: document.getElementById('my-devices-count'),
+    myDevicesList: document.getElementById('my-devices-list'),
+
+    // Tab 2: Track by ID
+    trackerIdInput: document.getElementById('tracker-id-input'),
+    btnSearchTrackId: document.getElementById('btn-search-track-id'),
+    quickTrackerChips: document.getElementById('quick-tracker-chips'),
+    journeyDeviceSummary: document.getElementById('journey-device-summary'),
+    summaryDeviceId: document.getElementById('summary-device-id'),
+    summaryDeviceModel: document.getElementById('summary-device-model'),
+    summaryDeviceStage: document.getElementById('summary-device-stage'),
+    summaryDeviceHandler: document.getElementById('summary-device-handler'),
+    summaryPassportQr: document.getElementById('summary-passport-qr'),
+    summaryShareLink: document.getElementById('summary-share-link'),
+    journeyTimelineContainer: document.getElementById('journey-timeline-container'),
+    timelineEvidenceBox: document.getElementById('timeline-evidence-box'),
+    evidencePreviewContainer: document.getElementById('evidence-preview-container'),
+    journeyAuditLogList: document.getElementById('journey-audit-log-list'),
+    auditEntryCount: document.getElementById('audit-entry-count'),
+
+    // Tab 3: Partner Console (Owner, Collector, Inspector/Repairer)
+    consoleOwnerSection: document.getElementById('console-owner-section'),
+    ownerHandoverDeviceSelect: document.getElementById('owner-handover-device-select'),
+    btnHandoverDropoff: document.getElementById('btn-handover-dropoff'),
+    btnHandoverPickup: document.getElementById('btn-handover-pickup'),
+    ownerDropoffGroup: document.getElementById('owner-dropoff-group'),
+    ownerPickupGroup: document.getElementById('owner-pickup-group'),
+    ownerDropoffCentreSelect: document.getElementById('owner-dropoff-centre-select'),
+    ownerPickupDate: document.getElementById('owner-pickup-date'),
+    btnSaveHandoverPref: document.getElementById('btn-save-handover-pref'),
+
+    consoleCollectorSection: document.getElementById('console-collector-section'),
+    collectScanInput: document.getElementById('collect-scan-input'),
+    btnSimScan: document.getElementById('btn-sim-scan'),
+    collectorNameInput: document.getElementById('collector-name-input'),
+    collectorOrgSelect: document.getElementById('collector-org-select'),
+    collectorLocationInput: document.getElementById('collector-location-input'),
+    btnConfirmCollection: document.getElementById('btn-confirm-collection'),
+    pendingPickupsList: document.getElementById('pending-pickups-list'),
+
+    consoleInspectorSection: document.getElementById('console-inspector-section'),
+    inspectorDeviceSelect: document.getElementById('inspector-device-select'),
+    btnBootYes: document.getElementById('btn-boot-yes'),
+    btnBootNo: document.getElementById('btn-boot-no'),
+    inspectionChecklistGrid: document.getElementById('inspection-checklist-grid'),
+    suggestedPathwayPill: document.getElementById('suggested-pathway-pill'),
+    suggestedPathwayDesc: document.getElementById('suggested-pathway-desc'),
+    inspectionBatteryDanger: document.getElementById('inspection-battery-danger'),
+    inspectionRescueLinkWrap: document.getElementById('inspection-rescue-link-wrap'),
+    btnListWorkingPartsRescue: document.getElementById('btn-list-working-parts-rescue'),
+    inspectorNotesInput: document.getElementById('inspector-notes-input'),
+    inspectionOverridePathway: document.getElementById('inspection-override-pathway'),
+    btnSubmitInspection: document.getElementById('btn-submit-inspection'),
+
+    outcomePathwaySelect: document.getElementById('outcome-pathway-select'),
+    outcomeOrgSelect: document.getElementById('outcome-org-select'),
+    outcomeCostInput: document.getElementById('outcome-cost-input'),
+    outcomeNewpriceInput: document.getElementById('outcome-newprice-input'),
+    evidenceFileInput: document.getElementById('evidence-file-input'),
+    evidenceFilePreviewWrap: document.getElementById('evidence-file-preview-wrap'),
+    evidencePreviewImg: document.getElementById('evidence-preview-img'),
+    evidenceFilenameDisplay: document.getElementById('evidence-filename-display'),
+    btnRemoveEvidence: document.getElementById('btn-remove-evidence'),
+    btnRecordOutcome: document.getElementById('btn-record-outcome'),
+    btnVerifyOutcome: document.getElementById('btn-verify-outcome'),
+
+    // Tab 4: Sustainability Dashboard
+    sustainabilitySummarySentence: document.getElementById('sustainability-summary-sentence'),
+    metricVerifiedCount: document.getElementById('metric-verified-count'),
+    metricPendingCount: document.getElementById('metric-pending-count'),
+    sustainabilityDonutSvg: document.getElementById('sustainability-donut-svg'),
+    donutLegend: document.getElementById('donut-legend'),
+    sustMetricRepaired: document.getElementById('sust-metric-repaired'),
+    sustMetricReused: document.getElementById('sust-metric-reused'),
+    sustMetricDonated: document.getElementById('sust-metric-donated'),
+    sustMetricParts: document.getElementById('sust-metric-parts'),
+    sustMetricRecycled: document.getElementById('sust-metric-recycled'),
+    sustMetricSavings: document.getElementById('sust-metric-savings'),
+    sustMetricCo2: document.getElementById('sust-metric-co2'),
+    sustMetricEwaste: document.getElementById('sust-metric-ewaste'),
+    btnMethodTooltip: document.getElementById('btn-method-tooltip'),
+    methodModalBox: document.getElementById('method-modal-box'),
+
+    // Custom Model Modal
+    customModelModal: document.getElementById('custom-model-modal'),
+    btnCloseCustomModel: document.getElementById('btn-close-custom-model'),
+    customModelForm: document.getElementById('custom-model-form'),
+    customDeviceType: document.getElementById('custom-device-type'),
+    customDeviceBrand: document.getElementById('custom-device-brand'),
+    customDeviceName: document.getElementById('custom-device-name'),
+    customDevicePrice: document.getElementById('custom-device-price'),
+    btnSaveCustomModel: document.getElementById('btn-save-custom-model'),
+
+    // Device Register Modal
+    deviceRegisterModal: document.getElementById('device-register-modal'),
+    btnCloseRegisterModal: document.getElementById('btn-close-register-modal'),
+    deviceRegistrationForm: document.getElementById('device-registration-form'),
+    regDeviceType: document.getElementById('reg-device-type'),
+    regDeviceBrand: document.getElementById('reg-device-brand'),
+    regDeviceModel: document.getElementById('reg-device-model'),
+    regDeviceCondition: document.getElementById('reg-device-condition'),
+    regDeviceAge: document.getElementById('reg-device-age'),
+    regDeviceProblem: document.getElementById('reg-device-problem'),
+    regOwnerName: document.getElementById('reg-owner-name'),
+    regDeviceArea: document.getElementById('reg-device-area'),
+    regDataSafetyCheck: document.getElementById('reg-data-safety-check'),
+    btnOpenSafetyWizardFromReg: document.getElementById('btn-open-safety-wizard-from-reg'),
+    btnSubmitRegistration: document.getElementById('btn-submit-registration'),
+
+    // Passport Label Modal
+    passportLabelModal: document.getElementById('passport-label-modal'),
+    btnCloseLabelModal: document.getElementById('btn-close-label-modal'),
+    printablePassportTag: document.getElementById('printable-passport-tag'),
+    passportLabelQr: document.getElementById('passport-label-qr'),
+    tagDisplayId: document.getElementById('tag-display-id'),
+    tagDisplayDevice: document.getElementById('tag-display-device'),
+    tagDisplayStatus: document.getElementById('tag-display-status'),
+    tagDisplayDate: document.getElementById('tag-display-date'),
+    btnPrintPassportTag: document.getElementById('btn-print-passport-tag'),
+    btnViewJourneyFromTag: document.getElementById('btn-view-journey-from-tag'),
+
+    // Barcode Scanner Modal
+    barcodeScannerModal: document.getElementById('barcode-scanner-modal'),
+    btnCloseScannerModal: document.getElementById('btn-close-scanner-modal'),
+    scannerSelectDevice: document.getElementById('scanner-select-device'),
+    scannerManualInput: document.getElementById('scanner-manual-input'),
+    btnConfirmSimulatedScan: document.getElementById('btn-confirm-simulated-scan')
   };
 
   /**
    * Initialize Application
    */
   function init() {
+    loadCustomDevicesIntoCatalog();
     setupEventListeners();
     populateModelDropdown();
     renderProblemCards();
     updateProgressUI();
     renderImpactDashboard();
     initComponentRescue();
+    initJourneyTracker();
     updateLanguageTexts();
+    handleHashRouting();
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('hashchange', handleHashRouting);
+    }
   }
 
   // ===================================================================
@@ -292,6 +469,7 @@
       }
       state.currentScreen = 'rescue';
       dom.screens.forEach(s => s.classList.remove('active'));
+      if (dom.screenTracker) dom.screenTracker.classList.remove('active');
       if (dom.screenRescue) dom.screenRescue.classList.add('active');
       if (dom.progressContainer) dom.progressContainer.style.display = 'none';
       dom.backBtn.classList.add('visible');
@@ -302,9 +480,28 @@
       return;
     }
 
+    if (screenNumber === 'tracker') {
+      if (typeof state.currentScreen === 'number') {
+        state.previousScreen = state.currentScreen;
+      }
+      state.currentScreen = 'tracker';
+      dom.screens.forEach(s => s.classList.remove('active'));
+      if (dom.screenRescue) dom.screenRescue.classList.remove('active');
+      if (dom.screenTracker) dom.screenTracker.classList.add('active');
+      if (dom.progressContainer) dom.progressContainer.style.display = 'none';
+      dom.backBtn.classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const viewport = document.querySelector('.screens-viewport');
+      if (viewport) viewport.scrollTop = 0;
+      switchTrackerTab(state.activeTrackerTab || 'my-devices');
+      return;
+    }
+
     if (screenNumber < 1 || screenNumber > 5) return;
     state.currentScreen = screenNumber;
 
+    if (dom.screenTracker) dom.screenTracker.classList.remove('active');
+    if (dom.screenRescue) dom.screenRescue.classList.remove('active');
     if (dom.progressContainer) dom.progressContainer.style.display = 'block';
 
     // Show / Hide Screen containers
@@ -1717,6 +1914,9 @@
       renderPoolListings();
       renderSampleRepairerChips();
     }
+    if (state.currentScreen === 'tracker') {
+      renderActiveTrackerTab();
+    }
   }
 
   function updateLanguageTexts() {
@@ -1738,6 +1938,10 @@
     // Power toggle pills
     dom.toggleWorkingYes.textContent = t.yes;
     dom.toggleWorkingNo.textContent = t.no;
+
+    if (state.currentScreen === 'tracker') {
+      renderActiveTrackerTab();
+    }
   }
 
   // ===================================================================
@@ -1746,7 +1950,7 @@
   function setupEventListeners() {
     // Header
     dom.backBtn.addEventListener('click', () => {
-      if (state.currentScreen === 'rescue') {
+      if (state.currentScreen === 'rescue' || state.currentScreen === 'tracker') {
         goToScreen(state.previousScreen || 1);
         return;
       }
@@ -1995,6 +2199,1573 @@
     });
 
     dom.btnConfirmBooking.addEventListener('click', handleBookingConfirm);
+
+    // =================================================================
+    // Journey Tracker Event Listeners
+    // =================================================================
+    // Header Tracker Button (Entry Point 1)
+    if (dom.navTrackerBtn) {
+      dom.navTrackerBtn.addEventListener('click', () => {
+        openTrackerScreen(state.activeTrackerTab || 'my-devices');
+      });
+    }
+
+    // Custom Model Modal Triggers
+    if (dom.btnAddCustomModel) {
+      dom.btnAddCustomModel.addEventListener('click', openCustomModelModal);
+    }
+    if (dom.btnCloseCustomModel) {
+      dom.btnCloseCustomModel.addEventListener('click', closeCustomModelModal);
+    }
+    if (dom.customModelForm) {
+      dom.customModelForm.addEventListener('submit', handleSaveCustomModel);
+    }
+    if (dom.customModelModal) {
+      dom.customModelModal.addEventListener('click', (e) => {
+        if (e.target === dom.customModelModal) closeCustomModelModal();
+      });
+    }
+
+    // Result & Certificate Cross-Links (Entry Points 2 & 3)
+    if (dom.btnResultToTracker) {
+      dom.btnResultToTracker.addEventListener('click', handleResultToTracker);
+    }
+    if (dom.btnCertToTracker) {
+      dom.btnCertToTracker.addEventListener('click', handleCertToTracker);
+    }
+
+    // Role Switcher
+    if (dom.trackerRoleSelector) {
+      dom.trackerRoleSelector.addEventListener('change', (e) => {
+        switchRole(e.target.value);
+      });
+    }
+
+    // Tracker Tabs
+    if (dom.tabTrackerMyDevices) {
+      dom.tabTrackerMyDevices.addEventListener('click', () => switchTrackerTab('my-devices'));
+    }
+    if (dom.tabTrackerTrackById) {
+      dom.tabTrackerTrackById.addEventListener('click', () => switchTrackerTab('track-by-id'));
+    }
+    if (dom.tabTrackerConsole) {
+      dom.tabTrackerConsole.addEventListener('click', () => switchTrackerTab('partner-console'));
+    }
+    if (dom.tabTrackerSustainability) {
+      dom.tabTrackerSustainability.addEventListener('click', () => switchTrackerTab('sustainability-dashboard'));
+    }
+
+    // Tab 1: Register Trigger
+    if (dom.btnOpenRegisterModal) {
+      dom.btnOpenRegisterModal.addEventListener('click', () => openDeviceRegisterModal());
+    }
+
+    // Tab 2: Track by ID Search
+    if (dom.btnSearchTrackId) {
+      dom.btnSearchTrackId.addEventListener('click', () => {
+        if (dom.trackerIdInput) trackDeviceById(dom.trackerIdInput.value);
+      });
+    }
+    if (dom.trackerIdInput) {
+      dom.trackerIdInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') trackDeviceById(dom.trackerIdInput.value);
+      });
+    }
+
+    // Tab 3: Owner Handover
+    if (dom.btnHandoverDropoff && dom.btnHandoverPickup) {
+      dom.btnHandoverDropoff.addEventListener('click', () => {
+        state.activeHandoverMode = 'dropoff';
+        dom.btnHandoverDropoff.classList.add('active');
+        dom.btnHandoverPickup.classList.remove('active');
+        if (dom.ownerDropoffGroup) dom.ownerDropoffGroup.style.display = 'block';
+        if (dom.ownerPickupGroup) dom.ownerPickupGroup.style.display = 'none';
+      });
+      dom.btnHandoverPickup.addEventListener('click', () => {
+        state.activeHandoverMode = 'pickup';
+        dom.btnHandoverPickup.classList.add('active');
+        dom.btnHandoverDropoff.classList.remove('active');
+        if (dom.ownerDropoffGroup) dom.ownerDropoffGroup.style.display = 'none';
+        if (dom.ownerPickupGroup) dom.ownerPickupGroup.style.display = 'block';
+      });
+    }
+    if (dom.btnSaveHandoverPref) {
+      dom.btnSaveHandoverPref.addEventListener('click', handleSaveHandoverSchedule);
+    }
+
+    // Tab 3: Collector
+    if (dom.btnSimScan) {
+      dom.btnSimScan.addEventListener('click', openBarcodeScannerModal);
+    }
+    if (dom.btnConfirmCollection) {
+      dom.btnConfirmCollection.addEventListener('click', handleConfirmCollection);
+    }
+
+    // Tab 3: Inspector / Repairer
+    if (dom.inspectorDeviceSelect) {
+      dom.inspectorDeviceSelect.addEventListener('change', handleInspectorDeviceSelectChange);
+    }
+    if (dom.btnBootYes && dom.btnBootNo) {
+      dom.btnBootYes.addEventListener('click', () => {
+        state.activeInspectionBoot = 'boots';
+        dom.btnBootYes.classList.add('active');
+        dom.btnBootNo.classList.remove('active');
+        evaluateInspectionRuleSuggestion();
+      });
+      dom.btnBootNo.addEventListener('click', () => {
+        state.activeInspectionBoot = 'no-boot';
+        dom.btnBootNo.classList.add('active');
+        dom.btnBootYes.classList.remove('active');
+        evaluateInspectionRuleSuggestion();
+      });
+    }
+    if (dom.btnListWorkingPartsRescue) {
+      dom.btnListWorkingPartsRescue.addEventListener('click', handleListWorkingPartsOnRescue);
+    }
+    if (dom.btnSubmitInspection) {
+      dom.btnSubmitInspection.addEventListener('click', handleSubmitInspection);
+    }
+
+    // Tab 3: Outcome Recording & Evidence
+    if (dom.evidenceFileInput) {
+      dom.evidenceFileInput.addEventListener('change', handleEvidenceUpload);
+    }
+    if (dom.btnRemoveEvidence) {
+      dom.btnRemoveEvidence.addEventListener('click', removeEvidence);
+    }
+    if (dom.btnRecordOutcome) {
+      dom.btnRecordOutcome.addEventListener('click', handleRecordOutcome);
+    }
+    if (dom.btnVerifyOutcome) {
+      dom.btnVerifyOutcome.addEventListener('click', handleVerifyOutcome);
+    }
+
+    // Tab 4: Sustainability Method Tooltip
+    if (dom.btnMethodTooltip) {
+      dom.btnMethodTooltip.addEventListener('click', () => {
+        if (dom.methodModalBox) {
+          dom.methodModalBox.style.display = dom.methodModalBox.style.display === 'none' ? 'block' : 'none';
+        }
+      });
+    }
+
+    // Modals: Device Registration Modal
+    if (dom.btnCloseRegisterModal) {
+      dom.btnCloseRegisterModal.addEventListener('click', closeDeviceRegisterModal);
+    }
+    if (dom.deviceRegistrationForm) {
+      dom.deviceRegistrationForm.addEventListener('submit', handleDeviceRegistrationSubmit);
+    }
+    if (dom.btnOpenSafetyWizardFromReg) {
+      dom.btnOpenSafetyWizardFromReg.addEventListener('click', () => {
+        closeDeviceRegisterModal();
+        goToScreen(4);
+      });
+    }
+    if (dom.deviceRegisterModal) {
+      dom.deviceRegisterModal.addEventListener('click', (e) => {
+        if (e.target === dom.deviceRegisterModal) closeDeviceRegisterModal();
+      });
+    }
+
+    // Modals: Passport Label Modal
+    if (dom.btnCloseLabelModal) {
+      dom.btnCloseLabelModal.addEventListener('click', closePassportLabelModal);
+    }
+    if (dom.btnPrintPassportTag) {
+      dom.btnPrintPassportTag.addEventListener('click', () => {
+        window.print();
+      });
+    }
+    if (dom.btnViewJourneyFromTag) {
+      dom.btnViewJourneyFromTag.addEventListener('click', () => {
+        closePassportLabelModal();
+        if (state.activeTrackedDevice) {
+          openTrackerScreen('track-by-id', state.activeTrackedDevice.id);
+        }
+      });
+    }
+    if (dom.passportLabelModal) {
+      dom.passportLabelModal.addEventListener('click', (e) => {
+        if (e.target === dom.passportLabelModal) closePassportLabelModal();
+      });
+    }
+
+    // Modals: Barcode Scanner Modal
+    if (dom.btnCloseScannerModal) {
+      dom.btnCloseScannerModal.addEventListener('click', closeBarcodeScannerModal);
+    }
+    if (dom.btnConfirmSimulatedScan) {
+      dom.btnConfirmSimulatedScan.addEventListener('click', handleConfirmSimulatedScan);
+    }
+    if (dom.barcodeScannerModal) {
+      dom.barcodeScannerModal.addEventListener('click', (e) => {
+        if (e.target === dom.barcodeScannerModal) closeBarcodeScannerModal();
+      });
+    }
+  }
+
+  // ===================================================================
+  // CUSTOM DEVICE MODEL MANAGEMENT
+  // ===================================================================
+  function loadCustomDevices() {
+    try {
+      const saved = localStorage.getItem('relife_custom_devices');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {
+      console.warn('LocalStorage unavailable for custom devices', e);
+    }
+    return [];
+  }
+
+  function saveCustomDevices(devices) {
+    try {
+      localStorage.setItem('relife_custom_devices', JSON.stringify(devices));
+    } catch (e) {
+      console.warn('Unable to save custom devices', e);
+    }
+  }
+
+  function loadCustomDevicesIntoCatalog() {
+    const list = state.customDevices || [];
+    list.forEach(cust => {
+      const exists = RELIFE_DATA.devices.some(d => d.id === cust.id);
+      if (!exists) {
+        RELIFE_DATA.devices.push(cust);
+      }
+    });
+  }
+
+  function openCustomModelModal() {
+    if (dom.customDeviceType) dom.customDeviceType.value = state.deviceType;
+    if (dom.customModelForm) dom.customModelForm.reset();
+    if (dom.customDeviceType) dom.customDeviceType.value = state.deviceType;
+    if (dom.customModelModal) dom.customModelModal.style.display = 'flex';
+  }
+
+  function closeCustomModelModal() {
+    if (dom.customModelModal) dom.customModelModal.style.display = 'none';
+  }
+
+  function handleSaveCustomModel(e) {
+    e.preventDefault();
+    const type = dom.customDeviceType.value;
+    const brand = dom.customDeviceBrand.value.trim();
+    const name = dom.customDeviceName.value.trim();
+    const priceVal = dom.customDevicePrice.value.trim();
+
+    if (!brand || !name || !priceVal) {
+      showToast('Please fill all custom device fields.');
+      return;
+    }
+
+    const price = parseInt(priceVal, 10);
+    if (isNaN(price) || price < 1000) {
+      showToast('Please enter a valid price (minimum ₹1,000).');
+      return;
+    }
+
+    const customId = `custom_${Date.now()}`;
+    const fullName = `${brand} ${name}`;
+
+    const newDevice = {
+      id: customId,
+      name: fullName,
+      brand: brand,
+      type: type,
+      os: type === 'phone' ? 'Android / iOS' : 'Windows 11',
+      newPrice: price,
+      isCustom: true,
+      repairs: {
+        cracked_screen: { cost: Math.round(price * 0.28), fairMin: Math.round(price * 0.22), fairMax: Math.round(price * 0.35) },
+        battery_drains: { cost: Math.round(price * 0.12), fairMin: Math.round(price * 0.09), fairMax: Math.round(price * 0.16) },
+        wont_charge: { cost: Math.round(price * 0.08), fairMin: Math.round(price * 0.06), fairMax: Math.round(price * 0.12) },
+        slow_perf: { cost: Math.round(price * 0.06), fairMin: Math.round(price * 0.04), fairMax: Math.round(price * 0.10) },
+        water_damage: { cost: Math.round(price * 0.35), fairMin: Math.round(price * 0.28), fairMax: Math.round(price * 0.45) }
+      }
+    };
+
+    state.customDevices.push(newDevice);
+    saveCustomDevices(state.customDevices);
+    RELIFE_DATA.devices.push(newDevice);
+
+    // Switch to that type if different
+    state.deviceType = type;
+    if (type === 'phone') {
+      dom.btnTypePhone.classList.add('active');
+      dom.btnTypeLaptop.classList.remove('active');
+    } else {
+      dom.btnTypeLaptop.classList.add('active');
+      dom.btnTypePhone.classList.remove('active');
+    }
+
+    populateModelDropdown();
+    state.modelId = customId;
+    dom.deviceModelSelect.value = customId;
+    closeCustomModelModal();
+
+    showToast(state.currentLang === 'ta' ? `புதிய சாதனம் சேர்க்கப்பட்டது: ${fullName}` : `Custom model added & selected: ${fullName}`);
+  }
+
+  // ===================================================================
+  // JOURNEY TRACKER MODULE (5 STAGES & CIRCULAR PASSPORT)
+  // ===================================================================
+  function loadTrackedDevices() {
+    try {
+      const saved = localStorage.getItem('relife_tracked_devices');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('LocalStorage unavailable for tracked devices', e);
+    }
+    return JSON.parse(JSON.stringify(RELIFE_DATA.seedTrackedDevices));
+  }
+
+  function saveTrackedDevices(devices) {
+    try {
+      localStorage.setItem('relife_tracked_devices', JSON.stringify(devices));
+    } catch (e) {
+      console.warn('Unable to save tracked devices', e);
+    }
+  }
+
+  function getNextTrackedId() {
+    let maxNum = 1000;
+    state.trackedDevices.forEach(d => {
+      const match = d.id && d.id.match(/^EW-(\d+)$/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxNum) maxNum = num;
+      }
+    });
+    return `EW-${maxNum + 1}`;
+  }
+
+  function formatDateTimeNow() {
+    const d = new Date();
+    return d.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }) + ', ' + d.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  function addAuditEntry(device, role, action) {
+    if (!device.auditLog) device.auditLog = [];
+    device.auditLog.unshift({
+      timestamp: formatDateTimeNow(),
+      isoDate: new Date().toISOString(),
+      role: role,
+      action: action
+    });
+  }
+
+  function addTimelineStep(device, stage, label, actor, notes) {
+    if (!device.timeline) device.timeline = [];
+    device.timeline.push({
+      stage: stage,
+      label: label,
+      timestamp: formatDateTimeNow(),
+      actor: actor,
+      notes: notes
+    });
+  }
+
+  function initJourneyTracker() {
+    if (dom.trackerRoleSelector) {
+      dom.trackerRoleSelector.value = state.activeRole;
+    }
+    switchTrackerTab(state.activeTrackerTab || 'my-devices');
+    switchRole(state.activeRole || 'owner');
+    populateOwnerDropoffCentres();
+    populateCollectorOrgDropdown();
+    populateConsoleDeviceSelects();
+    renderQuickTrackerChips();
+  }
+
+  function openTrackerScreen(tab, deviceId) {
+    goToScreen('tracker');
+    if (tab) switchTrackerTab(tab);
+    if (deviceId) {
+      trackDeviceById(deviceId);
+    }
+  }
+
+  function switchTrackerTab(tab) {
+    state.activeTrackerTab = tab;
+
+    const tabBtns = [
+      { id: 'my-devices', btn: dom.tabTrackerMyDevices, view: dom.viewMyDevices },
+      { id: 'track-by-id', btn: dom.tabTrackerTrackById, view: dom.viewTrackById },
+      { id: 'partner-console', btn: dom.tabTrackerConsole, view: dom.viewPartnerConsole },
+      { id: 'sustainability-dashboard', btn: dom.tabTrackerSustainability, view: dom.viewSustainabilityDashboard }
+    ];
+
+    tabBtns.forEach(item => {
+      if (item.btn) {
+        if (item.id === tab) item.btn.classList.add('active');
+        else item.btn.classList.remove('active');
+      }
+      if (item.view) {
+        item.view.style.display = item.id === tab ? 'block' : 'none';
+      }
+    });
+
+    renderActiveTrackerTab();
+  }
+
+  function renderActiveTrackerTab() {
+    const tab = state.activeTrackerTab;
+    if (tab === 'my-devices') {
+      renderMyDevicesList();
+    } else if (tab === 'track-by-id') {
+      if (state.activeTrackedDevice) {
+        renderDeviceTimeline(state.activeTrackedDevice);
+      } else if (state.trackedDevices.length > 0) {
+        trackDeviceById(state.trackedDevices[0].id);
+      }
+    } else if (tab === 'partner-console') {
+      switchRole(state.activeRole);
+    } else if (tab === 'sustainability-dashboard') {
+      renderSustainabilityDashboard();
+    }
+  }
+
+  function switchRole(role) {
+    state.activeRole = role;
+    if (dom.trackerRoleSelector) dom.trackerRoleSelector.value = role;
+
+    if (dom.consoleOwnerSection) dom.consoleOwnerSection.style.display = role === 'owner' ? 'block' : 'none';
+    if (dom.consoleCollectorSection) dom.consoleCollectorSection.style.display = role === 'collector' ? 'block' : 'none';
+    if (dom.consoleInspectorSection) dom.consoleInspectorSection.style.display = role === 'repairer' ? 'block' : 'none';
+
+    if (role === 'owner') {
+      populateOwnerHandoverDevices();
+    } else if (role === 'collector') {
+      renderPendingPickupsList();
+    } else if (role === 'repairer') {
+      populateConsoleDeviceSelects();
+      handleInspectorDeviceSelectChange();
+    }
+  }
+
+  // --- Tab 1: My Devices ---
+  function renderMyDevicesList() {
+    const list = state.trackedDevices;
+    if (dom.myDevicesCount) dom.myDevicesCount.textContent = `${list.length} devices`;
+    if (!dom.myDevicesList) return;
+
+    const t = RELIFE_DATA.translations[state.currentLang];
+    dom.myDevicesList.innerHTML = '';
+
+    if (list.length === 0) {
+      dom.myDevicesList.innerHTML = `<div style="text-align: center; color: #64748B; padding: 24px;">No devices registered yet. Click "+ Register Device" to begin.</div>`;
+      return;
+    }
+
+    list.forEach(dev => {
+      const card = document.createElement('div');
+      card.className = 'tracked-device-card';
+
+      const stageInfo = RELIFE_DATA.journeyStages.find(s => s.id === dev.currentStage) || { name: dev.currentStage, step: 1 };
+      const stageName = t[`stage_${dev.currentStage}`] || stageInfo.name;
+
+      // 5-segment progress bar
+      let segmentsHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        let cls = 'progress-segment';
+        if (i < dev.stageStep) cls += ' completed';
+        else if (i === dev.stageStep) cls += ' current';
+        segmentsHtml += `<div class="${cls}"></div>`;
+      }
+
+      const stagePillClass = `stage-pill stage-${dev.stageStep}`;
+
+      card.innerHTML = `
+        <div class="device-card-header">
+          <div class="device-title-wrap">
+            <h4>${dev.model}</h4>
+            <div class="device-model-sub">${dev.brand} • ${dev.area} • Age: ${dev.ageYears}y</div>
+          </div>
+          <span class="passport-id-badge">${dev.id}</span>
+        </div>
+        <div class="journey-progress-bar">
+          ${segmentsHtml}
+        </div>
+        <div class="device-status-row">
+          <span class="${stagePillClass}">${stageName}</span>
+          <span style="color: #64748B;">Reg: ${dev.dateRegistered || '29 Oct 2026'}</span>
+        </div>
+        <div style="font-size: 11.5px; color: #475569; margin-bottom: 8px;">
+          <strong>Issue:</strong> ${dev.problem || 'Standard circular check'}
+        </div>
+        <div class="device-actions-row">
+          <button type="button" class="btn-card-action btn-track-card" data-id="${dev.id}">
+            📍 ${t.viewJourneyTimelineBtn || 'View Timeline'}
+          </button>
+          <button type="button" class="btn-card-action btn-label-card" data-id="${dev.id}">
+            🏷️ ${t.printLabelBtn || 'Asset Tag'}
+          </button>
+        </div>
+      `;
+
+      card.querySelector('.btn-track-card').addEventListener('click', () => {
+        openTrackerScreen('track-by-id', dev.id);
+      });
+
+      card.querySelector('.btn-label-card').addEventListener('click', () => {
+        openPassportLabelModal(dev);
+      });
+
+      dom.myDevicesList.appendChild(card);
+    });
+  }
+
+  // --- Tab 2: Track by ID & Vertical Timeline ---
+  function renderQuickTrackerChips() {
+    if (!dom.quickTrackerChips) return;
+    dom.quickTrackerChips.innerHTML = '';
+    state.trackedDevices.slice(0, 6).forEach(d => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip-id';
+      chip.textContent = d.id;
+      chip.addEventListener('click', () => {
+        if (dom.trackerIdInput) dom.trackerIdInput.value = d.id;
+        trackDeviceById(d.id);
+      });
+      dom.quickTrackerChips.appendChild(chip);
+    });
+  }
+
+  function trackDeviceById(id) {
+    const cleanId = (id || '').trim().toUpperCase();
+    const dev = state.trackedDevices.find(d => d.id.toUpperCase() === cleanId);
+    if (!dev) {
+      showToast(state.currentLang === 'ta' ? `சாதன ஐடி ${cleanId} காணப்படவில்லை` : `Device ID ${cleanId} not found.`);
+      return;
+    }
+
+    state.activeTrackedDevice = dev;
+    if (dom.trackerIdInput) dom.trackerIdInput.value = dev.id;
+
+    // Update URL hash for direct bookmarkable sharing
+    window.location.hash = `track=${dev.id}`;
+
+    renderDeviceTimeline(dev);
+  }
+
+  function renderDeviceTimeline(dev) {
+    if (!dom.journeyDeviceSummary || !dom.journeyTimelineContainer) return;
+    const t = RELIFE_DATA.translations[state.currentLang];
+
+    dom.journeyDeviceSummary.style.display = 'flex';
+    if (dom.summaryDeviceId) dom.summaryDeviceId.textContent = dev.id;
+    if (dom.summaryDeviceModel) dom.summaryDeviceModel.textContent = `${dev.model} (${dev.brand})`;
+
+    const stageInfo = RELIFE_DATA.journeyStages.find(s => s.id === dev.currentStage) || { name: dev.currentStage, step: 1 };
+    const stageName = t[`stage_${dev.currentStage}`] || stageInfo.name;
+    if (dom.summaryDeviceStage) {
+      dom.summaryDeviceStage.textContent = stageName;
+      dom.summaryDeviceStage.className = `stage-pill stage-${dev.stageStep}`;
+    }
+
+    if (dom.summaryDeviceHandler) {
+      const lastEntry = dev.timeline && dev.timeline[dev.timeline.length - 1];
+      dom.summaryDeviceHandler.textContent = lastEntry ? `Handled by: ${lastEntry.actor}` : `Area: ${dev.area}`;
+    }
+
+    // Render QR Code inside passport summary
+    renderQRCodeInto(dom.summaryPassportQr, `https://relife-passport.vercel.app/#track=${dev.id}`, 64, 64);
+
+    // Share link
+    if (dom.summaryShareLink) {
+      dom.summaryShareLink.onclick = () => {
+        const shareUrl = `${window.location.origin}${window.location.pathname}#track=${dev.id}`;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast('Shareable tracker link copied to clipboard!');
+          });
+        } else {
+          showToast(`Tracking URL: ${shareUrl}`);
+        }
+      };
+    }
+
+    // 5 Stages Timeline
+    dom.journeyTimelineContainer.innerHTML = '';
+    const stages = RELIFE_DATA.journeyStages;
+
+    stages.forEach((stg) => {
+      const stepNum = stg.step;
+      const node = document.createElement('div');
+
+      let nodeState = 'pending';
+      if (stepNum < dev.stageStep) nodeState = 'completed';
+      else if (stepNum === dev.stageStep) nodeState = 'current';
+
+      node.className = `timeline-step-node ${nodeState}`;
+
+      // Find matching timeline entry
+      const entry = (dev.timeline || []).find(e => e.stage === stg.id);
+      const stageTitle = t[`stage_${stg.id}`] || stg.name;
+
+      let iconHtml = `${stepNum}`;
+      if (nodeState === 'completed') iconHtml = '✓';
+      else if (nodeState === 'current') iconHtml = stg.icon;
+
+      let timeText = entry ? entry.timestamp : 'Pending Stage';
+      let actorText = entry ? entry.actor : 'Pending Assignment';
+      let notesText = entry ? entry.notes : (t[`stageDesc_${stg.id}`] || 'Awaiting stage completion in circular custody.');
+
+      node.innerHTML = `
+        <div class="node-icon-holder">${iconHtml}</div>
+        <div class="node-card-body">
+          <div class="node-top-row">
+            <h5>${stg.icon} ${stageTitle}</h5>
+            <span class="node-timestamp">${timeText}</span>
+          </div>
+          <div class="node-meta-row">
+            <span class="custodian-badge">👤 ${actorText}</span>
+            <span class="custodian-badge">📍 ${dev.area}</span>
+          </div>
+          <p class="node-desc-text">${notesText}</p>
+        </div>
+      `;
+
+      dom.journeyTimelineContainer.appendChild(node);
+    });
+
+    // Evidence Attachment Section
+    if (dom.timelineEvidenceBox && dom.evidencePreviewContainer) {
+      const outcome = dev.outcomeDetails;
+      if (outcome && (outcome.evidenceName || outcome.evidenceDataUrl)) {
+        dom.timelineEvidenceBox.style.display = 'block';
+        const imgHtml = outcome.evidenceDataUrl
+          ? `<img src="${outcome.evidenceDataUrl}" alt="Evidence Thumbnail" class="evidence-thumb-img">`
+          : `<div style="font-size: 28px;">📄</div>`;
+
+        dom.evidencePreviewContainer.innerHTML = `
+          ${imgHtml}
+          <div class="evidence-info">
+            <div class="evidence-filename">📎 ${outcome.evidenceName || 'Verified_Chain_Of_Custody.pdf'}</div>
+            <div class="evidence-note">Tamper-evident verification file recorded on ${outcome.recordedAt || '27 Oct 2026'}.</div>
+          </div>
+        `;
+      } else {
+        dom.timelineEvidenceBox.style.display = 'none';
+      }
+    }
+
+    // Tamper-Evident Audit Log
+    if (dom.journeyAuditLogList && dom.auditEntryCount) {
+      const logs = dev.auditLog || [
+        { timestamp: dev.dateRegistered || '29 Oct 2026', role: 'owner', action: `Device registered: ${dev.id}` }
+      ];
+      dom.auditEntryCount.textContent = `${logs.length} entries`;
+      dom.journeyAuditLogList.innerHTML = logs.map(l => `
+        <div class="audit-entry">
+          <span>[${l.timestamp}] <strong>${l.role.toUpperCase()}</strong>: ${l.action}</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  // --- QR Code Generator Helper ---
+  function renderQRCodeInto(containerEl, payloadText, width = 74, height = 74) {
+    if (!containerEl) return;
+    containerEl.innerHTML = '';
+
+    if (typeof QRCode !== 'undefined') {
+      try {
+        new QRCode(containerEl, {
+          text: payloadText,
+          width: width,
+          height: height,
+          colorDark: '#0F172A',
+          colorLight: '#FFFFFF',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+        return;
+      } catch (err) {
+        console.warn('QRCode CDN library error, using SVG fallback', err);
+      }
+    }
+
+    // SVG QR Fallback
+    containerEl.innerHTML = `
+      <svg width="${width}" height="${height}" viewBox="0 0 100 100" fill="#0F172A" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="white"/>
+        <rect x="10" y="10" width="28" height="28" fill="#1B8A5A"/>
+        <rect x="16" y="16" width="16" height="16" fill="white"/>
+        <rect x="20" y="20" width="8" height="8" fill="#1B8A5A"/>
+        <rect x="62" y="10" width="28" height="28" fill="#1B8A5A"/>
+        <rect x="68" y="16" width="16" height="16" fill="white"/>
+        <rect x="72" y="20" width="8" height="8" fill="#1B8A5A"/>
+        <rect x="10" y="62" width="28" height="28" fill="#1B8A5A"/>
+        <rect x="16" y="68" width="16" height="16" fill="white"/>
+        <rect x="20" y="72" width="8" height="8" fill="#1B8A5A"/>
+        <rect x="44" y="12" width="8" height="8" fill="#0F172A"/>
+        <rect x="44" y="28" width="8" height="8" fill="#0F172A"/>
+        <rect x="12" y="44" width="8" height="8" fill="#0F172A"/>
+        <rect x="28" y="44" width="8" height="8" fill="#0F172A"/>
+        <rect x="44" y="44" width="12" height="12" fill="#1B8A5A"/>
+        <rect x="62" y="44" width="8" height="8" fill="#0F172A"/>
+        <rect x="76" y="44" width="8" height="8" fill="#0F172A"/>
+        <rect x="44" y="62" width="8" height="8" fill="#0F172A"/>
+        <rect x="62" y="62" width="8" height="8" fill="#0F172A"/>
+        <rect x="76" y="76" width="8" height="8" fill="#0F172A"/>
+        <rect x="62" y="76" width="8" height="8" fill="#0F172A"/>
+        <rect x="44" y="76" width="8" height="8" fill="#0F172A"/>
+      </svg>
+    `;
+  }
+
+  // --- Stage 1: Device Registration Form Handler ---
+  function openDeviceRegisterModal(prefill) {
+    if (dom.deviceRegistrationForm) dom.deviceRegistrationForm.reset();
+
+    if (prefill) {
+      if (dom.regDeviceType && prefill.type) dom.regDeviceType.value = prefill.type;
+      if (dom.regDeviceBrand && prefill.brand) dom.regDeviceBrand.value = prefill.brand;
+      if (dom.regDeviceModel && prefill.model) dom.regDeviceModel.value = prefill.model;
+      if (dom.regDeviceCondition && prefill.condition) dom.regDeviceCondition.value = prefill.condition;
+      if (dom.regDeviceProblem && prefill.problem) dom.regDeviceProblem.value = prefill.problem;
+      if (dom.regDeviceAge && prefill.ageYears) dom.regDeviceAge.value = prefill.ageYears;
+      if (dom.regDataSafetyCheck && prefill.dataSafetyConfirmed) dom.regDataSafetyCheck.checked = true;
+    }
+
+    if (dom.deviceRegisterModal) dom.deviceRegisterModal.style.display = 'flex';
+  }
+
+  function closeDeviceRegisterModal() {
+    if (dom.deviceRegisterModal) dom.deviceRegisterModal.style.display = 'none';
+  }
+
+  function handleDeviceRegistrationSubmit(e) {
+    e.preventDefault();
+
+    if (!dom.regDataSafetyCheck || !dom.regDataSafetyCheck.checked) {
+      showToast('Please confirm personal data wipe before registering.');
+      return;
+    }
+
+    const type = dom.regDeviceType.value;
+    const brand = dom.regDeviceBrand.value.trim();
+    const model = dom.regDeviceModel.value.trim();
+    const condition = dom.regDeviceCondition.value;
+    const age = parseInt(dom.regDeviceAge.value, 10) || 3;
+    const problem = dom.regDeviceProblem.value.trim();
+    const owner = (dom.regOwnerName && dom.regOwnerName.value.trim()) || 'Device Owner';
+    const area = dom.regDeviceArea.value.trim() || 'Chennai';
+
+    const newId = getNextTrackedId();
+    const nowTime = formatDateTimeNow();
+
+    const newDevice = {
+      id: newId,
+      deviceType: type,
+      brand: brand,
+      model: model,
+      condition: condition,
+      problem: problem,
+      ageYears: age,
+      ownerName: owner,
+      area: area,
+      dataSafetyConfirmed: true,
+      currentStage: 'registered',
+      stageStep: 1,
+      isVerified: false,
+      dateRegistered: nowTime,
+      timeline: [
+        {
+          stage: 'registered',
+          label: 'Registered',
+          timestamp: nowTime,
+          actor: `Owner (${owner})`,
+          notes: `Device registered with circular asset ID ${newId}. Data-safety certified.`
+        }
+      ],
+      auditLog: [
+        {
+          timestamp: nowTime,
+          isoDate: new Date().toISOString(),
+          role: 'owner',
+          action: `Device ${newId} registered with verified data wipe.`
+        }
+      ]
+    };
+
+    state.trackedDevices.unshift(newDevice);
+    saveTrackedDevices(state.trackedDevices);
+
+    closeDeviceRegisterModal();
+    openPassportLabelModal(newDevice);
+
+    renderMyDevicesList();
+    renderQuickTrackerChips();
+    populateConsoleDeviceSelects();
+
+    showToast(state.currentLang === 'ta' ? `சாதனம் பதிவு செய்யப்பட்டது! ஐடி: ${newId}` : `Device registered! Passport ID: ${newId}`);
+  }
+
+  // --- Printable Passport Asset Label Modal ---
+  function openPassportLabelModal(device) {
+    if (!dom.passportLabelModal) return;
+    state.activeTrackedDevice = device;
+
+    if (dom.tagDisplayId) dom.tagDisplayId.textContent = device.id;
+    if (dom.tagDisplayDevice) dom.tagDisplayDevice.textContent = `${device.model} (${device.brand})`;
+    if (dom.tagDisplayStatus) dom.tagDisplayStatus.textContent = `Stage ${device.stageStep}: ${device.currentStage}`;
+    if (dom.tagDisplayDate) dom.tagDisplayDate.textContent = device.dateRegistered || '29 Oct 2026';
+
+    renderQRCodeInto(dom.passportLabelQr, `https://relife-passport.vercel.app/#track=${device.id}`, 90, 90);
+
+    dom.passportLabelModal.style.display = 'flex';
+  }
+
+  function closePassportLabelModal() {
+    if (dom.passportLabelModal) dom.passportLabelModal.style.display = 'none';
+  }
+
+  // --- Stage 2: Collection & Handover Handlers ---
+  function populateOwnerDropoffCentres() {
+    if (!dom.ownerDropoffCentreSelect) return;
+    dom.ownerDropoffCentreSelect.innerHTML = '';
+    const centres = RELIFE_DATA.providers;
+    centres.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.name} (${p.area} • ${p.distance} km)`;
+      dom.ownerDropoffCentreSelect.appendChild(opt);
+    });
+  }
+
+  function populateOwnerHandoverDevices() {
+    if (!dom.ownerHandoverDeviceSelect) return;
+    dom.ownerHandoverDeviceSelect.innerHTML = '';
+    const pending = state.trackedDevices.filter(d => d.currentStage === 'registered');
+    if (pending.length === 0) {
+      dom.ownerHandoverDeviceSelect.innerHTML = `<option value="">No pending registered devices</option>`;
+      return;
+    }
+    pending.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = `${d.id} — ${d.model} (${d.brand})`;
+      dom.ownerHandoverDeviceSelect.appendChild(opt);
+    });
+  }
+
+  function handleSaveHandoverSchedule() {
+    const devId = dom.ownerHandoverDeviceSelect ? dom.ownerHandoverDeviceSelect.value : '';
+    if (!devId) {
+      showToast('Please select a registered device.');
+      return;
+    }
+    const dev = state.trackedDevices.find(d => d.id === devId);
+    if (!dev) return;
+
+    const mode = state.activeHandoverMode;
+    let scheduleInfo = '';
+    if (mode === 'dropoff') {
+      const centreId = dom.ownerDropoffCentreSelect.value;
+      const centre = RELIFE_DATA.providers.find(p => p.id === centreId);
+      const centreName = centre ? centre.name : 'Authorized Drop-off Center';
+      scheduleInfo = `Drop-off at ${centreName}`;
+      dev.handoverType = 'dropoff';
+      dev.dropoffCentre = centreName;
+    } else {
+      const dateVal = (dom.ownerPickupDate && dom.ownerPickupDate.value) || new Date().toISOString().split('T')[0];
+      scheduleInfo = `Doorstep pickup requested for ${dateVal}`;
+      dev.handoverType = 'pickup';
+      dev.pickupDate = dateVal;
+    }
+
+    addAuditEntry(dev, 'owner', `Handover preference updated: ${scheduleInfo}`);
+    saveTrackedDevices(state.trackedDevices);
+    showToast(`Handover schedule saved for ${dev.id}!`);
+  }
+
+  function renderPendingPickupsList() {
+    if (!dom.pendingPickupsList) return;
+    dom.pendingPickupsList.innerHTML = '';
+    const pending = state.trackedDevices.filter(d => d.currentStage === 'registered');
+
+    if (pending.length === 0) {
+      dom.pendingPickupsList.innerHTML = `<p style="font-size: 11.5px; color: #64748B; padding: 10px;">No pending pickups currently awaiting collection.</p>`;
+      return;
+    }
+
+    pending.forEach(d => {
+      const item = document.createElement('div');
+      item.className = 'collector-pickup-row';
+      item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; margin-bottom:6px;';
+      item.innerHTML = `
+        <div>
+          <strong>${d.id}</strong> — ${d.model}
+          <div style="font-size: 10.5px; color: #64748B;">📍 ${d.area} • Owner: ${d.ownerName}</div>
+        </div>
+        <button type="button" class="btn-primary" style="font-size: 11px; padding: 4px 10px;" data-id="${d.id}">
+          Select
+        </button>
+      `;
+
+      item.querySelector('button').addEventListener('click', () => {
+        if (dom.collectScanInput) dom.collectScanInput.value = d.id;
+        showToast(`Device ${d.id} selected for collection confirmation.`);
+      });
+
+      dom.pendingPickupsList.appendChild(item);
+    });
+  }
+
+  function populateCollectorOrgDropdown() {
+    if (!dom.collectorOrgSelect) return;
+    dom.collectorOrgSelect.innerHTML = '';
+    const orgs = [
+      'EcoFix Logistics Chennai',
+      'GreenTech Logistics & Courier',
+      'Tambaram Mobile Courier Hub',
+      'ReNew Transport Network',
+      'Direct Depot Drop-off'
+    ];
+    orgs.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o;
+      opt.textContent = o;
+      dom.collectorOrgSelect.appendChild(opt);
+    });
+  }
+
+  function handleConfirmCollection() {
+    const devId = (dom.collectScanInput ? dom.collectScanInput.value : '').trim().toUpperCase();
+    if (!devId) {
+      showToast('Please enter or scan a Device ID.');
+      return;
+    }
+
+    const dev = state.trackedDevices.find(d => d.id.toUpperCase() === devId);
+    if (!dev) {
+      showToast(`Device ${devId} not found in registered database.`);
+      return;
+    }
+
+    if (dev.currentStage !== 'registered') {
+      showToast(`Device ${devId} is already at stage: ${dev.currentStage}`);
+      return;
+    }
+
+    const collectorName = (dom.collectorNameInput && dom.collectorNameInput.value.trim()) || 'Certified Collector';
+    const org = dom.collectorOrgSelect ? dom.collectorOrgSelect.value : 'Circular Logistics';
+    const loc = (dom.collectorLocationInput && dom.collectorLocationInput.value.trim()) || dev.area;
+    const nowTime = formatDateTimeNow();
+
+    dev.currentStage = 'collected';
+    dev.stageStep = 2;
+    dev.collectionDetails = {
+      collectorName: collectorName,
+      organization: org,
+      collectedAt: nowTime,
+      location: loc
+    };
+
+    addTimelineStep(dev, 'collected', 'Collected', `${collectorName} (${org})`, `Physical custody transferred at ${loc}. Non-metal anti-static packaging used.`);
+    addAuditEntry(dev, 'collector', `Custody collected by ${collectorName} (${org}) at ${loc}`);
+
+    saveTrackedDevices(state.trackedDevices);
+
+    renderPendingPickupsList();
+    populateConsoleDeviceSelects();
+    if (state.activeTrackedDevice && state.activeTrackedDevice.id === dev.id) {
+      renderDeviceTimeline(dev);
+    }
+
+    showToast(state.currentLang === 'ta' ? `சாதனம் ${dev.id} பெறப்பட்டது!` : `Device ${dev.id} successfully collected!`);
+  }
+
+  // --- Stage 3: Inspection & Rule-based Sorting ---
+  function populateConsoleDeviceSelects() {
+    if (dom.inspectorDeviceSelect) {
+      dom.inspectorDeviceSelect.innerHTML = '';
+      const inspectable = state.trackedDevices.filter(d => ['collected', 'inspected', 'outcome_recorded'].includes(d.currentStage));
+      inspectable.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.id;
+        opt.textContent = `${d.id} — ${d.model} [${d.currentStage.toUpperCase()}]`;
+        dom.inspectorDeviceSelect.appendChild(opt);
+      });
+      if (inspectable.length > 0 && !dom.inspectorDeviceSelect.value) {
+        dom.inspectorDeviceSelect.value = inspectable[0].id;
+      }
+    }
+
+    if (dom.inspectionOverridePathway) {
+      dom.inspectionOverridePathway.innerHTML = '';
+      RELIFE_DATA.pathwayOptions.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.icon} ${p.name}`;
+        dom.inspectionOverridePathway.appendChild(opt);
+      });
+    }
+
+    if (dom.outcomePathwaySelect) {
+      dom.outcomePathwaySelect.innerHTML = '';
+      RELIFE_DATA.pathwayOptions.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.icon} ${p.name}`;
+        dom.outcomePathwaySelect.appendChild(opt);
+      });
+    }
+
+    if (dom.outcomeOrgSelect) {
+      dom.outcomeOrgSelect.innerHTML = '';
+      RELIFE_DATA.providers.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.name;
+        opt.textContent = `${p.name} (${p.area})`;
+        dom.outcomeOrgSelect.appendChild(opt);
+      });
+      const customOpt = document.createElement('option');
+      customOpt.value = 'Authorized CPCB Partner Recycler';
+      customOpt.textContent = 'Authorized CPCB Partner Recycler';
+      dom.outcomeOrgSelect.appendChild(customOpt);
+    }
+  }
+
+  function renderInspectionChecklist() {
+    if (!dom.inspectionChecklistGrid) return;
+    dom.inspectionChecklistGrid.innerHTML = '';
+    const comps = RELIFE_DATA.inspectionComponents;
+
+    comps.forEach(comp => {
+      const row = document.createElement('div');
+      row.className = 'component-inspect-row';
+
+      const currentVal = state.inspectionChecks[comp.id] || 'working';
+
+      row.innerHTML = `
+        <span class="comp-name-lbl">${comp.icon} ${comp.name}</span>
+        <div class="comp-status-group">
+          <button type="button" class="check-chip ${currentVal === 'working' ? 'selected' : ''}" data-comp="${comp.id}" data-val="working">Working</button>
+          <button type="button" class="check-chip ${currentVal === 'damaged' ? 'selected' : ''}" data-comp="${comp.id}" data-val="damaged">Damaged</button>
+          <button type="button" class="check-chip ${currentVal === 'untested' ? 'selected' : ''}" data-comp="${comp.id}" data-val="untested">Untested</button>
+        </div>
+      `;
+
+      row.querySelectorAll('.check-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const cid = chip.dataset.comp;
+          const cval = chip.dataset.val;
+          state.inspectionChecks[cid] = cval;
+
+          row.querySelectorAll('.check-chip').forEach(c => c.classList.remove('selected'));
+          chip.classList.add('selected');
+
+          evaluateInspectionRuleSuggestion();
+        });
+      });
+
+      dom.inspectionChecklistGrid.appendChild(row);
+    });
+
+    evaluateInspectionRuleSuggestion();
+  }
+
+  function handleInspectorDeviceSelectChange() {
+    const devId = dom.inspectorDeviceSelect ? dom.inspectorDeviceSelect.value : '';
+    if (!devId) return;
+    const dev = state.trackedDevices.find(d => d.id === devId);
+    if (!dev) return;
+
+    if (dev.inspectionDetails) {
+      state.activeInspectionBoot = dev.inspectionDetails.boots ? 'boots' : 'no-boot';
+      state.inspectionChecks = Object.assign({}, dev.inspectionDetails.components || {});
+    } else {
+      state.activeInspectionBoot = 'boots';
+      state.inspectionChecks = {
+        screen: 'working',
+        battery: 'working',
+        ram: 'working',
+        storage: 'working',
+        motherboard: 'working',
+        charger_port: 'working',
+        keyboard: 'working',
+        camera: 'working'
+      };
+    }
+
+    if (dom.btnBootYes && dom.btnBootNo) {
+      if (state.activeInspectionBoot === 'boots') {
+        dom.btnBootYes.classList.add('active');
+        dom.btnBootNo.classList.remove('active');
+      } else {
+        dom.btnBootNo.classList.add('active');
+        dom.btnBootYes.classList.remove('active');
+      }
+    }
+
+    renderInspectionChecklist();
+  }
+
+  function evaluateInspectionRuleSuggestion() {
+    const devId = dom.inspectorDeviceSelect ? dom.inspectorDeviceSelect.value : '';
+    const dev = state.trackedDevices.find(d => d.id === devId) || { ageYears: 3 };
+
+    const boots = state.activeInspectionBoot === 'boots';
+    const checks = state.inspectionChecks;
+
+    const isWorking = (c) => checks[c] === 'working';
+    const isDamaged = (c) => checks[c] === 'damaged';
+
+    let workingCount = 0;
+    let damagedCount = 0;
+    Object.values(checks).forEach(v => {
+      if (v === 'working') workingCount++;
+      if (v === 'damaged') damagedCount++;
+    });
+
+    const valuablePartsWorking = ['ram', 'storage', 'screen', 'charger_port'].filter(isWorking);
+    const batteryDamaged = isDamaged('battery');
+
+    let pathway = 'recycled';
+    let reasonEn = '';
+    let reasonTa = '';
+
+    if (boots && workingCount >= 5 && damagedCount <= 2) {
+      pathway = 'repaired';
+      reasonEn = 'Device boots and majority of key modules are operational. Component repair is highly economical.';
+      reasonTa = 'சாதனம் தொடங்குகிறது மற்றும் பெரும்பாலான பாகங்கள் இயங்குகின்றன. பழுதுபார்ப்பு பரிந்துரைக்கப்படுகிறது.';
+    } else if (boots && (dev.ageYears >= 4 || workingCount >= 4)) {
+      pathway = 'refurbished';
+      reasonEn = 'Device powers on with stable core system. Recommended for certified refurbishment and resale.';
+      reasonTa = 'சாதனம் தொடங்குகிறது. சான்றளிக்கப்பட்ட புதுப்பித்தல் மற்றும் மறுவிற்பனைக்கு ஏற்றது.';
+    } else if (!boots && valuablePartsWorking.length > 0) {
+      pathway = 'parts_recovered';
+      reasonEn = `Motherboard/power dead, but high-value components (${valuablePartsWorking.join(', ')}) can be rescued for circular reuse.`;
+      reasonTa = `சாதனம் ஆன் ஆகவில்லை, ஆனால் மதிப்புமிக்க பாகங்கள் மீட்கப்பட்டு மறுபயன்பாட்டிற்கு உதவும்.`;
+    } else {
+      pathway = 'recycled';
+      reasonEn = 'Substantial hardware damage across critical modules. Send to certified e-waste recycler for zero-landfill metal extraction.';
+      reasonTa = 'பெரும்பாலான பாகங்கள் சேதமடைந்துள்ளன. சான்றளிக்கப்பட்ட மின்-கழிவு மறுசுழற்சிக்கு அனுப்பவும்.';
+    }
+
+    state.inspectionSuggestedPathway = pathway;
+    state.inspectionForcedBatteryRecycle = batteryDamaged;
+
+    if (dom.suggestedPathwayPill) {
+      const pObj = RELIFE_DATA.pathwayOptions.find(p => p.id === pathway) || { name: pathway };
+      dom.suggestedPathwayPill.textContent = `${pObj.name}`;
+    }
+
+    if (dom.suggestedPathwayDesc) {
+      dom.suggestedPathwayDesc.textContent = state.currentLang === 'ta' ? reasonTa : reasonEn;
+    }
+
+    if (dom.inspectionOverridePathway) {
+      dom.inspectionOverridePathway.value = pathway;
+    }
+
+    // Battery Safety Rule Display
+    if (dom.inspectionBatteryDanger) {
+      dom.inspectionBatteryDanger.style.display = batteryDamaged ? 'block' : 'none';
+    }
+
+    // Component Recovery Shortcut Button
+    if (dom.inspectionRescueLinkWrap) {
+      dom.inspectionRescueLinkWrap.style.display = pathway === 'parts_recovered' ? 'block' : 'none';
+    }
+  }
+
+  function handleListWorkingPartsOnRescue() {
+    const devId = dom.inspectorDeviceSelect ? dom.inspectorDeviceSelect.value : '';
+    const dev = state.trackedDevices.find(d => d.id === devId);
+    if (!dev) return;
+
+    // Open rescue screen
+    openRescueScreen('have', dev.id);
+
+    // Pre-fill first working part
+    const checks = state.inspectionChecks;
+    const workingPart = Object.keys(checks).find(k => checks[k] === 'working' && ['ram', 'storage', 'screen', 'keyboard', 'camera'].includes(k));
+
+    if (workingPart && dom.partComponentType) {
+      dom.partComponentType.value = workingPart === 'storage' ? 'ssd' : workingPart;
+      if (dom.partSpec) {
+        dom.partSpec.value = `OEM ${workingPart.toUpperCase()} from ${dev.model} (Tested & Inspected)`;
+      }
+    }
+
+    showToast(`Working components from ${dev.id} pre-filled for Rescue listing!`);
+  }
+
+  function handleSubmitInspection() {
+    const devId = dom.inspectorDeviceSelect ? dom.inspectorDeviceSelect.value : '';
+    if (!devId) {
+      showToast('Please select a device to inspect.');
+      return;
+    }
+
+    const dev = state.trackedDevices.find(d => d.id === devId);
+    if (!dev) return;
+
+    const boots = state.activeInspectionBoot === 'boots';
+    const pathway = dom.inspectionOverridePathway ? dom.inspectionOverridePathway.value : state.inspectionSuggestedPathway;
+    const notes = (dom.inspectorNotesInput && dom.inspectorNotesInput.value.trim()) || 'Technical inspection completed.';
+    const nowTime = formatDateTimeNow();
+
+    dev.currentStage = 'inspected';
+    dev.stageStep = 3;
+    dev.inspectionDetails = {
+      boots: boots,
+      inspectedAt: nowTime,
+      inspectorName: 'Inspection Partner Lead',
+      components: Object.assign({}, state.inspectionChecks),
+      suggestedPathway: state.inspectionSuggestedPathway,
+      finalPathway: pathway,
+      inspectorNotes: notes
+    };
+
+    let safetySuffix = '';
+    if (state.inspectionForcedBatteryRecycle) {
+      safetySuffix = ' [CRITICAL: Battery marked damaged and routed for certified recycling]';
+    }
+
+    addTimelineStep(dev, 'inspected', 'Inspected', 'Inspection Partner', `Hardware check: ${boots ? 'Boots OK' : 'Does not boot'}. Pathway: ${pathway}.${safetySuffix}`);
+    addAuditEntry(dev, 'inspector', `Inspection completed by Partner. Pathway: ${pathway}`);
+
+    saveTrackedDevices(state.trackedDevices);
+
+    populateConsoleDeviceSelects();
+    if (state.activeTrackedDevice && state.activeTrackedDevice.id === dev.id) {
+      renderDeviceTimeline(dev);
+    }
+
+    showToast(state.currentLang === 'ta' ? `ஆய்வு பதிவு செய்யப்பட்டது: ${dev.id}` : `Hardware inspection recorded for ${dev.id}!`);
+  }
+
+  // --- Stage 4: Outcome Recording & Verification ---
+  function handleEvidenceUpload(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (evt) {
+      state.outcomeEvidenceDataUrl = evt.target.result;
+      state.outcomeEvidenceFileName = file.name;
+
+      if (dom.evidencePreviewImg) dom.evidencePreviewImg.src = evt.target.result;
+      if (dom.evidenceFilenameDisplay) dom.evidenceFilenameDisplay.textContent = file.name;
+      if (dom.evidenceFilePreviewWrap) dom.evidenceFilePreviewWrap.style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeEvidence() {
+    state.outcomeEvidenceDataUrl = null;
+    state.outcomeEvidenceFileName = null;
+    if (dom.evidenceFilePreviewWrap) dom.evidenceFilePreviewWrap.style.display = 'none';
+    if (dom.evidenceFileInput) dom.evidenceFileInput.value = '';
+  }
+
+  function handleRecordOutcome() {
+    const devId = dom.inspectorDeviceSelect ? dom.inspectorDeviceSelect.value : '';
+    if (!devId) {
+      showToast('Please select a device.');
+      return;
+    }
+    const dev = state.trackedDevices.find(d => d.id === devId);
+    if (!dev) return;
+
+    const pathway = dom.outcomePathwaySelect.value;
+    const org = dom.outcomeOrgSelect.value;
+    const costPaid = parseInt(dom.outcomeCostInput.value, 10) || 0;
+    const newPrice = parseInt(dom.outcomeNewpriceInput.value, 10) || 25000;
+    const userSaved = Math.max(0, newPrice - costPaid);
+    const nowTime = formatDateTimeNow();
+
+    dev.currentStage = 'outcome_recorded';
+    dev.stageStep = 4;
+    dev.isVerified = false;
+
+    dev.outcomeDetails = {
+      pathway: pathway,
+      organization: org,
+      recordedAt: nowTime,
+      repairCost: costPaid,
+      newPrice: newPrice,
+      userSaved: userSaved,
+      evidenceName: state.outcomeEvidenceFileName || 'Circular_Outcome_Receipt.pdf',
+      evidenceDataUrl: state.outcomeEvidenceDataUrl || null
+    };
+
+    addTimelineStep(dev, 'outcome_recorded', 'Outcome Recorded', org, `Pathway: ${pathway}. Handling entity: ${org}. Cost: ₹${formatINR(costPaid)}. Pending audit verification.`);
+    addAuditEntry(dev, 'repairer', `Final outcome recorded by ${org}: ${pathway}`);
+
+    saveTrackedDevices(state.trackedDevices);
+
+    if (state.activeTrackedDevice && state.activeTrackedDevice.id === dev.id) {
+      renderDeviceTimeline(dev);
+    }
+
+    showToast(state.currentLang === 'ta' ? `முடிவு பதிவு செய்யப்பட்டது (சரிபார்ப்பு நிலுவையில் உள்ளது)` : `Outcome recorded! Status: Outcome Recorded (Awaiting Verification)`);
+  }
+
+  function handleVerifyOutcome() {
+    const devId = dom.inspectorDeviceSelect ? dom.inspectorDeviceSelect.value : '';
+    if (!devId) {
+      showToast('Please select a device.');
+      return;
+    }
+    const dev = state.trackedDevices.find(d => d.id === devId);
+    if (!dev) return;
+
+    if (!dev.outcomeDetails) {
+      handleRecordOutcome();
+    }
+
+    const nowTime = formatDateTimeNow();
+    dev.currentStage = 'completed_verified';
+    dev.stageStep = 5;
+    dev.isVerified = true;
+    dev.verifiedAt = nowTime;
+    dev.verifiedBy = 'Audit Partner Certification';
+
+    addTimelineStep(dev, 'completed_verified', 'Completed - Verified', 'Auditor & Partner', `Evidence audited and tamper-evident chain of custody verified. Officially counted toward sustainability metrics.`);
+    addAuditEntry(dev, 'repairer', `Audit verification confirmed by Partner for ${dev.id}`);
+
+    saveTrackedDevices(state.trackedDevices);
+
+    if (state.activeTrackedDevice && state.activeTrackedDevice.id === dev.id) {
+      renderDeviceTimeline(dev);
+    }
+
+    renderSustainabilityDashboard();
+
+    showToast(state.currentLang === 'ta' ? `வெற்றிகரமாக சரிபார்க்கப்பட்டது! அதிகாரப்பூர்வ தாக்கம் பதிவு செய்யப்பட்டது ✅` : `Outcome Verified! Tamper-evident impact added to Sustainability Dashboard ✅`);
+  }
+
+  // --- Stage 5: Sustainability Dashboard & SVG Donut Chart ---
+  function renderSustainabilityDashboard() {
+    const all = state.trackedDevices;
+    const verified = all.filter(d => d.currentStage === 'completed_verified' || d.isVerified);
+    const pending = all.filter(d => d.currentStage !== 'completed_verified' && !d.isVerified);
+
+    if (dom.metricVerifiedCount) dom.metricVerifiedCount.textContent = `${verified.length}`;
+    if (dom.metricPendingCount) dom.metricPendingCount.textContent = `${pending.length}`;
+
+    let countRepaired = 0;
+    let countReused = 0;
+    let countDonated = 0;
+    let countParts = 0;
+    let countRecycled = 0;
+    let totalSavings = 0;
+    let totalCo2 = 0;
+    let totalEwaste = 0;
+
+    verified.forEach(d => {
+      const pathway = (d.outcomeDetails && d.outcomeDetails.pathway) || 'recycled';
+      if (pathway === 'repaired') countRepaired++;
+      else if (pathway === 'refurbished') countReused++;
+      else if (pathway === 'donated') countDonated++;
+      else if (pathway === 'parts_recovered') countParts++;
+      else if (pathway === 'recycled') countRecycled++;
+
+      // User savings only for verified repair or reuse/donation transactions
+      if (['repaired', 'refurbished', 'donated'].includes(pathway) && d.outcomeDetails) {
+        totalSavings += (d.outcomeDetails.userSaved || 0);
+      }
+
+      // Environmental factors
+      const factor = (d.deviceType === 'laptop') ? RELIFE_DATA.impactFactors.laptop : RELIFE_DATA.impactFactors.phone;
+      if (pathway === 'parts_recovered') {
+        totalCo2 += RELIFE_DATA.impactFactors.part.co2 * 2;
+        totalEwaste += RELIFE_DATA.impactFactors.part.ewaste * 2;
+      } else {
+        totalCo2 += factor.co2;
+        totalEwaste += factor.ewaste;
+      }
+    });
+
+    if (dom.sustMetricRepaired) dom.sustMetricRepaired.textContent = `${countRepaired}`;
+    if (dom.sustMetricReused) dom.sustMetricReused.textContent = `${countReused}`;
+    if (dom.sustMetricDonated) dom.sustMetricDonated.textContent = `${countDonated}`;
+    if (dom.sustMetricParts) dom.sustMetricParts.textContent = `${countParts}`;
+    if (dom.sustMetricRecycled) dom.sustMetricRecycled.textContent = `${countRecycled}`;
+
+    if (dom.sustMetricSavings) dom.sustMetricSavings.textContent = `₹${formatINR(totalSavings)}`;
+    if (dom.sustMetricCo2) dom.sustMetricCo2.textContent = `${Math.round(totalCo2)} kg`;
+    if (dom.sustMetricEwaste) dom.sustMetricEwaste.textContent = `${totalEwaste.toFixed(1)} kg`;
+
+    // Summary Sentence
+    const totalReusedOrRepaired = countRepaired + countReused;
+    const summaryEn = `${totalReusedOrRepaired} devices reused/repaired, ${countDonated} donated to education, and ${countRecycled} sent to authorised zero-landfill recyclers.`;
+    const summaryTa = `${totalReusedOrRepaired} சாதனங்கள் பழுதுபார்க்கப்பட்டு மறுபயன்படுத்தப்பட்டன, ${countDonated} கல்விக்கு நன்கொடை அளிக்கப்பட்டன, மற்றும் ${countRecycled} அங்கீகரிக்கப்பட்ட மறுசுழற்சிக்கு அனுப்பப்பட்டன.`;
+
+    if (dom.sustainabilitySummarySentence) {
+      dom.sustainabilitySummarySentence.textContent = state.currentLang === 'ta' ? summaryTa : summaryEn;
+    }
+
+    // Render SVG Donut Chart
+    renderDonutChart({
+      repaired: countRepaired,
+      reused: countReused,
+      donated: countDonated,
+      parts: countParts,
+      recycled: countRecycled
+    });
+  }
+
+  function renderDonutChart(data) {
+    if (!dom.sustainabilityDonutSvg || !dom.donutLegend) return;
+    const total = Object.values(data).reduce((acc, v) => acc + v, 0);
+
+    const slices = [
+      { key: 'repaired', label: 'Repaired', count: data.repaired, color: '#10B981' },
+      { key: 'reused', label: 'Refurbished', count: data.reused, color: '#3B82F6' },
+      { key: 'donated', label: 'Donated', count: data.donated, color: '#8B5CF6' },
+      { key: 'parts', label: 'Parts Rescued', count: data.parts, color: '#F59E0B' },
+      { key: 'recycled', label: 'Recycled', count: data.recycled, color: '#059669' }
+    ];
+
+    if (total === 0) {
+      dom.sustainabilityDonutSvg.innerHTML = `
+        <circle cx="80" cy="80" r="50" fill="transparent" stroke="#E2E8F0" stroke-width="20" />
+        <text x="80" y="85" text-anchor="middle" font-size="12" fill="#64748B" font-weight="700">No Data</text>
+      `;
+      dom.donutLegend.innerHTML = '';
+      return;
+    }
+
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius;
+    let accumulatedOffset = 0;
+
+    let circlesSvg = '';
+    slices.forEach(sl => {
+      if (sl.count === 0) return;
+      const fraction = sl.count / total;
+      const strokeDasharray = `${fraction * circumference} ${circumference}`;
+      const strokeDashoffset = -accumulatedOffset;
+      accumulatedOffset += fraction * circumference;
+
+      circlesSvg += `
+        <circle cx="80" cy="80" r="${radius}" fill="transparent"
+                stroke="${sl.color}" stroke-width="20"
+                stroke-dasharray="${strokeDasharray}"
+                stroke-dashoffset="${strokeDashoffset}"
+                transform="rotate(-90 80 80)" />
+      `;
+    });
+
+    dom.sustainabilityDonutSvg.innerHTML = `
+      ${circlesSvg}
+      <text x="80" y="78" text-anchor="middle" font-size="16" fill="#0F172A" font-weight="800">${total}</text>
+      <text x="80" y="93" text-anchor="middle" font-size="9" fill="#64748B" font-weight="700">VERIFIED</text>
+    `;
+
+    dom.donutLegend.innerHTML = slices.filter(s => s.count > 0).map(s => `
+      <div class="donut-legend-item">
+        <span class="legend-dot" style="background: ${s.color};"></span>
+        <span>${s.label}: <strong>${s.count}</strong></span>
+      </div>
+    `).join('');
+  }
+
+  // --- Barcode Scanner Simulation & Hash Routing ---
+  function openBarcodeScannerModal() {
+    if (!dom.barcodeScannerModal) return;
+    if (dom.scannerSelectDevice) {
+      dom.scannerSelectDevice.innerHTML = '<option value="">-- Choose registered device --</option>';
+      state.trackedDevices.filter(d => d.currentStage === 'registered').forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.id;
+        opt.textContent = `${d.id} — ${d.model} (${d.ownerName})`;
+        dom.scannerSelectDevice.appendChild(opt);
+      });
+    }
+    if (dom.scannerManualInput) dom.scannerManualInput.value = '';
+    dom.barcodeScannerModal.style.display = 'flex';
+  }
+
+  function closeBarcodeScannerModal() {
+    if (dom.barcodeScannerModal) dom.barcodeScannerModal.style.display = 'none';
+  }
+
+  function handleConfirmSimulatedScan() {
+    const selected = (dom.scannerSelectDevice && dom.scannerSelectDevice.value) || '';
+    const manual = (dom.scannerManualInput && dom.scannerManualInput.value.trim().toUpperCase()) || '';
+    const targetId = selected || manual;
+
+    if (!targetId) {
+      showToast('Please select or type a Device ID.');
+      return;
+    }
+
+    if (dom.collectScanInput) {
+      dom.collectScanInput.value = targetId;
+    }
+    closeBarcodeScannerModal();
+    showToast(`QR Code scanned: ${targetId}`);
+  }
+
+  function handleHashRouting() {
+    if (typeof window === 'undefined' || !window.location || !window.location.hash) return;
+    const hash = window.location.hash;
+    const match = hash.match(/#track=([A-Za-z0-9\-]+)/);
+    if (match && match[1]) {
+      const devId = match[1];
+      openTrackerScreen('track-by-id', devId);
+    }
+  }
+
+  // --- Cross-Linking Handlers ---
+  function handleResultToTracker() {
+    if (!state.decision) {
+      openDeviceRegisterModal();
+      return;
+    }
+    const dev = state.decision.device;
+    const probKey = state.problem;
+    const t = RELIFE_DATA.translations[state.currentLang];
+    const probObj = (t.problems || {})[probKey] || { title: probKey };
+
+    openDeviceRegisterModal({
+      type: dev.type,
+      brand: dev.brand || 'Device',
+      model: dev.name,
+      condition: state.isWorking ? 'Working' : 'Not working',
+      problem: probObj.title || 'Screen/Hardware issue',
+      ageYears: state.ageYears,
+      dataSafetyConfirmed: false
+    });
+  }
+
+  function handleCertToTracker() {
+    if (!state.decision) {
+      openDeviceRegisterModal();
+      return;
+    }
+    const dev = state.decision.device;
+    openDeviceRegisterModal({
+      type: dev.type,
+      brand: dev.brand || 'Device',
+      model: dev.name,
+      condition: state.isWorking ? 'Working' : 'Partly working',
+      problem: state.problem || 'Passed data-safety wizard',
+      ageYears: state.ageYears,
+      dataSafetyConfirmed: true
+    });
   }
 
   function formatINR(number) {

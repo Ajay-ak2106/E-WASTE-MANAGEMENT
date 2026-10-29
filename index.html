@@ -46,8 +46,11 @@
         </div>
       </div>
       <div class="header-right">
-        <button id="nav-rescue-btn" class="nav-rescue-btn" aria-label="Component Rescue">
-          <span data-i18n="navRescueBtn">🧩 Component Rescue</span>
+        <button id="nav-tracker-btn" class="nav-header-btn" aria-label="Journey Tracker">
+          <span data-i18n="navTrackerBtn">📍 Tracker</span>
+        </button>
+        <button id="nav-rescue-btn" class="nav-header-btn" aria-label="Component Rescue">
+          <span data-i18n="navRescueBtn">🧩 Rescue</span>
         </button>
         <button id="lang-toggle-btn" class="lang-toggle-btn" aria-label="Toggle Language">
           🌐 தமிழ்
@@ -103,7 +106,12 @@
 
         <!-- Model Dropdown -->
         <div class="form-group">
-          <label class="form-label" for="device-model" data-i18n="modelLabel">Select Model</label>
+          <div class="label-with-action">
+            <label class="form-label" for="device-model" data-i18n="modelLabel">Select Model</label>
+            <button type="button" id="btn-add-custom-model" class="btn-text-action" title="Add custom device model">
+              <span data-i18n="btnAddCustomModel">+ Add Custom Model</span>
+            </button>
+          </div>
           <div class="select-wrapper">
             <select id="device-model" class="custom-select">
               <option value="">-- Select your device model --</option>
@@ -211,6 +219,17 @@
             <p data-i18n="resultRescueCardDesc">Even if unrepairable, internal RAM, SSD, screen or charger can restore another device. List them in the Rescue Pool.</p>
             <button type="button" id="btn-result-to-rescue" class="btn-rescue-action">
               <span data-i18n="resultRescueBtn">List Spare Parts on Rescue Pool 🧩</span>
+            </button>
+          </div>
+
+          <!-- Entry Point 2: Register & Track on Journey Tracker -->
+          <div id="result-tracker-card" class="result-tracker-card">
+            <div class="tracker-card-top">
+              <span class="tracker-badge-pill">📍 <span>E-Waste Journey Tracker</span></span>
+            </div>
+            <p>Every old device gets a unique ID and QR code to trace its full journey from pickup to confirmed circular outcome.</p>
+            <button type="button" id="btn-result-to-tracker" class="btn-tracker-action">
+              <span data-i18n="btnResultToTracker">Register This Device & Track Journey 📍</span>
             </button>
           </div>
 
@@ -379,6 +398,13 @@
                 <h5>Scannable Digital Verification</h5>
                 <p data-i18n="certInstruction">Show this certified QR receipt to your technician or collection agent.</p>
               </div>
+            </div>
+
+            <!-- Entry Point 3 on Certificate -->
+            <div class="cert-tracker-link-wrap">
+              <button type="button" id="btn-cert-to-tracker" class="btn-cert-tracker">
+                📍 <span data-i18n="btnCertToTracker">Track This Device on Journey Tracker →</span>
+              </button>
             </div>
           </div>
         </div>
@@ -762,6 +788,459 @@
 
       </section>
 
+      <!-- =============================================================
+           SCREEN: E-WASTE JOURNEY TRACKER
+           ============================================================= -->
+      <section class="screen" data-screen="tracker" id="screen-tracker">
+        <div class="screen-header tracker-header">
+          <div class="tracker-top-bar">
+            <button type="button" id="btn-tracker-back-to-flow" class="btn-back-flow">
+              <span data-i18n="trackerBackToFlow">← Back to Assessment Flow</span>
+            </button>
+          </div>
+          <h2 data-i18n="trackerTitle">E-Waste Journey Tracker</h2>
+          <p data-i18n="trackerSubtitle">End-to-end device passport tracking: from registration to verified circular outcome</p>
+        </div>
+
+        <!-- Role Switcher Bar -->
+        <!-- Role Switcher Bar -->
+        <div class="role-switcher-card">
+          <div class="role-selector-header">
+            <label for="tracker-role-selector" class="role-label" data-i18n="roleLabel">Simulate Role:</label>
+            <div class="select-wrapper mini">
+              <select id="tracker-role-selector" class="custom-select mini">
+                <option value="owner" data-i18n="roleOwner">👤 Device Owner</option>
+                <option value="collector" data-i18n="roleCollector">🚚 Collection Partner</option>
+                <option value="repairer" data-i18n="roleInspector">🔬 Repair-Inspection Partner</option>
+              </select>
+              <div class="select-chevron">▼</div>
+            </div>
+          </div>
+          <div class="role-demo-note" data-i18n="roleDemoNote">
+            Demo roles only. Production would use verified partner accounts.
+          </div>
+        </div>
+
+        <!-- 4 Tracker Tabs -->
+        <div class="tracker-tabs-container">
+          <button type="button" class="tracker-tab-btn active" id="tab-tracker-my-devices" data-tracker-tab="my-devices">
+            <span data-i18n="tabMyDevices">My Devices</span>
+          </button>
+          <button type="button" class="tracker-tab-btn" id="tab-tracker-track-by-id" data-tracker-tab="track-by-id">
+            <span data-i18n="tabTrackById">Track by ID</span>
+          </button>
+          <button type="button" class="tracker-tab-btn" id="tab-tracker-console" data-tracker-tab="partner-console">
+            <span data-i18n="tabPartnerConsole">Partner Console</span>
+          </button>
+          <button type="button" class="tracker-tab-btn" id="tab-tracker-sustainability" data-tracker-tab="sustainability-dashboard">
+            <span data-i18n="tabSustainabilityDashboard">Sustainability</span>
+          </button>
+        </div>
+
+        <!-- Feedback error box -->
+        <div id="tracker-feedback-error" class="error-box" role="alert" style="display: none;"></div>
+
+        <!-- TAB 1: MY DEVICES -->
+        <div id="view-my-devices" class="tracker-tab-view active">
+          <div class="my-devices-summary">
+            <span id="my-devices-count" style="font-weight: 700; color: #1B8A5A;">6 devices</span>
+            <button type="button" id="btn-open-register-modal" class="btn-primary mini">
+              <span data-i18n="btnGeneratePassport">+ Register Device</span>
+            </button>
+          </div>
+          <div id="my-devices-list" class="my-devices-list"></div>
+        </div>
+
+        <!-- TAB 2: TRACK BY ID -->
+        <div id="view-track-by-id" class="tracker-tab-view" style="display: none;">
+          <div class="tracker-search-card">
+            <div class="tracker-search-box">
+              <input type="text" id="tracker-id-input" class="custom-select tracker-search-input" placeholder="Enter Device ID (e.g. EW-1001, EW-1005)...">
+              <button type="button" id="btn-search-track-id" class="btn-primary" style="width: auto; padding: 8px 14px;">🔍 Track</button>
+            </div>
+            <div class="quick-chips-row">
+              <span style="font-weight: 700;">Sample demo devices:</span>
+              <div id="quick-tracker-chips" style="display: flex; gap: 4px; flex-wrap: wrap;"></div>
+            </div>
+          </div>
+
+          <!-- Active Tracked Device Details Container -->
+          <div id="tracked-device-details" class="tracked-device-details">
+            <!-- Passport Header Card -->
+            <div id="journey-device-summary" class="journey-passport-card" style="display: none;">
+              <div class="passport-qr-box">
+                <div id="summary-passport-qr"></div>
+              </div>
+              <div class="passport-meta-box">
+                <span class="passport-id-badge" id="summary-device-id">EW-1001</span>
+                <h4 id="summary-device-model" style="margin-top: 4px;">Dell Inspiron 3511</h4>
+                <div style="font-size: 11px; margin-top: 2px;">
+                  <span id="summary-device-stage" class="stage-pill">Completed - Verified</span>
+                </div>
+                <div id="summary-device-handler" style="font-size: 10px; color: #64748B; margin-top: 2px;">Handled by: Kalvi Outreach</div>
+                <a href="javascript:void(0)" id="summary-share-link" class="share-track-link">🔗 Copy Shareable Track Link</a>
+              </div>
+            </div>
+
+            <!-- 5-Stage Interactive Vertical Timeline -->
+            <div class="timeline-section-title">
+              <h4>Lifecycle Milestones & Chain of Custody</h4>
+            </div>
+            <div id="journey-timeline-container" class="journey-timeline-container"></div>
+
+            <!-- Evidence Attachment Section (if uploaded) -->
+            <div id="timeline-evidence-box" class="timeline-evidence-box" style="display: none;">
+              <h5>📎 Chain-of-Custody Evidence</h5>
+              <div id="evidence-preview-container" class="evidence-preview-container"></div>
+            </div>
+
+            <!-- Chronological Audit Log -->
+            <div class="timeline-audit-section">
+              <details class="audit-details">
+                <summary>📜 View Tamper-Evident Audit Log (<span id="audit-entry-count">5 entries</span>)</summary>
+                <div id="journey-audit-log-list" class="audit-log-list"></div>
+              </details>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: PARTNER CONSOLE -->
+        <div id="view-partner-console" class="tracker-tab-view" style="display: none;">
+          <!-- Role: OWNER CONSOLE -->
+          <div id="console-owner-section" class="console-role-view">
+            <div class="console-role-header">
+              <h4>👤 Owner Handover Center</h4>
+              <p>Schedule collection or drop off your registered devices at verified circular points.</p>
+            </div>
+            <div class="handover-scheduler-card">
+              <div class="form-group">
+                <label class="form-label" for="owner-handover-device-select">Select Your Registered Device</label>
+                <div class="select-wrapper">
+                  <select id="owner-handover-device-select" class="custom-select"></select>
+                  <div class="select-chevron">▼</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="handoverModeLabel">Handover Method</label>
+                <div class="segmented-control">
+                  <button type="button" id="btn-handover-dropoff" class="segment-btn active">
+                    🏢 <span data-i18n="handoverDropoff">Drop at Collection Centre</span>
+                  </button>
+                  <button type="button" id="btn-handover-pickup" class="segment-btn">
+                    🚚 <span data-i18n="handoverPickup">Request Doorstep Pickup</span>
+                  </button>
+                </div>
+              </div>
+              <div id="owner-dropoff-group" class="form-group">
+                <label class="form-label" for="owner-dropoff-centre-select">Choose Collection Centre</label>
+                <div class="select-wrapper">
+                  <select id="owner-dropoff-centre-select" class="custom-select"></select>
+                  <div class="select-chevron">▼</div>
+                </div>
+              </div>
+              <div id="owner-pickup-group" class="form-group" style="display: none;">
+                <label class="form-label" data-i18n="pickupDateLabel">Preferred Pickup Date & Window</label>
+                <input type="date" id="owner-pickup-date" class="custom-select" style="margin-bottom: 8px;">
+                <div class="slots-grid">
+                  <div class="slot-radio-card selected" data-owner-slot="morning">
+                    <span>Morning (9:30 AM - 1:00 PM) ☀️</span>
+                  </div>
+                  <div class="slot-radio-card" data-owner-slot="afternoon">
+                    <span>Afternoon (1:00 PM - 5:00 PM) 🌤️</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" id="btn-save-handover-pref" class="btn-primary">
+                Save Handover Schedule 📅
+              </button>
+            </div>
+          </div>
+
+          <!-- Role: COLLECTION PARTNER CONSOLE -->
+          <div id="console-collector-section" class="console-role-view" style="display: none;">
+            <div class="console-role-header">
+              <h4 data-i18n="collectionPartnerConsoleTitle">🚚 Collection Partner Console</h4>
+              <p>Scan device QR code or enter passport ID upon physical pickup or depot drop-off.</p>
+            </div>
+            <div class="console-card">
+              <div class="form-group">
+                <label class="form-label" for="collect-scan-input" data-i18n="scanOrEnterId">Device ID</label>
+                <div class="input-with-button">
+                  <input type="text" id="collect-scan-input" class="custom-select" placeholder="e.g. EW-1002 or EW-1006">
+                  <button type="button" id="btn-sim-scan" class="btn-scan">📷 Scan QR</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="collector-name-input" data-i18n="collectorNameLabel">Collector / Driver Name</label>
+                <input type="text" id="collector-name-input" class="custom-select" placeholder="e.g. Ramesh Kumar" value="Ramesh Kumar">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="collector-org-select" data-i18n="collectorOrgLabel">Collection Organisation</label>
+                <div class="select-wrapper">
+                  <select id="collector-org-select" class="custom-select"></select>
+                  <div class="select-chevron">▼</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="collector-location-input" data-i18n="collectionLocationLabel">Handover Location</label>
+                <input type="text" id="collector-location-input" class="custom-select" placeholder="e.g. Tambaram West, Chennai" value="Tambaram West, Chennai">
+              </div>
+              <button type="button" id="btn-confirm-collection" class="btn-primary">
+                <span data-i18n="btnConfirmCollection">Confirm Collection & Handover 🚚</span>
+              </button>
+            </div>
+
+            <div class="pending-pickups-card" style="margin-top: 14px;">
+              <h5 data-i18n="pendingPickupsTitle">Pending Device Pickups</h5>
+              <div id="pending-pickups-list" class="pending-pickups-list"></div>
+            </div>
+          </div>
+
+          <!-- Role: REPAIR-INSPECTION PARTNER CONSOLE -->
+          <div id="console-inspector-section" class="console-role-view" style="display: none;">
+            <div class="console-role-header">
+              <h4 data-i18n="inspectionConsoleTitle">🔬 Repair & Inspection Partner Console</h4>
+              <p>Hardware testing, component recovery triage, and outcome verification.</p>
+            </div>
+
+            <!-- Select Device -->
+            <div class="form-group">
+              <label class="form-label" for="inspector-device-select" data-i18n="selectInspectingDevice">Select Device</label>
+              <div class="select-wrapper">
+                <select id="inspector-device-select" class="custom-select"></select>
+                <div class="select-chevron">▼</div>
+              </div>
+            </div>
+
+            <!-- Stage 3 Inspection Form -->
+            <div id="inspection-form-card" class="console-card">
+              <div class="form-group">
+                <label class="form-label" data-i18n="bootOutcomeLabel">Power & Boot Check</label>
+                <div class="segmented-control">
+                  <button type="button" id="btn-boot-yes" class="segment-btn active">
+                    ✅ <span data-i18n="bootsYes">Boots into OS / BIOS</span>
+                  </button>
+                  <button type="button" id="btn-boot-no" class="segment-btn">
+                    ❌ <span data-i18n="bootsNo">Does not boot (Dead)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Component Checklist -->
+              <div class="form-group">
+                <label class="form-label" data-i18n="componentsHealthTitle">Modular Component Health Checklist</label>
+                <div id="inspection-checklist-grid" class="inspection-checklist-grid"></div>
+              </div>
+
+              <!-- Auto-Suggested Recommendation -->
+              <div class="suggested-pathway-box">
+                <div class="suggested-pathway-header">
+                  <span>🤖</span> <strong data-i18n="autoSuggestedPathway">Auto-Suggested Circular Pathway</strong>
+                </div>
+                <div id="suggested-pathway-pill" class="suggested-pathway-pill">Refurbish</div>
+                <p id="suggested-pathway-desc" class="suggested-pathway-desc">Rule-based assessment based on hardware health.</p>
+
+                <!-- Battery Danger Alert -->
+                <div id="inspection-battery-danger" class="battery-danger-callout" style="display: none;">
+                  <span data-i18n="batteryDamageWarning">⚠️ BATTERY HAZARD: Damaged or swollen lithium batteries cannot be reused. Routed automatically to certified recyclers.</span>
+                </div>
+
+                <!-- Component Recovery Link Button -->
+                <div id="inspection-rescue-link-wrap" style="display: none; margin-top: 10px;">
+                  <button type="button" id="btn-list-working-parts-rescue" class="btn-rescue-action">
+                    <span data-i18n="btnListPartsRescue">List Working Parts on Component Rescue 🧩</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Inspector Notes -->
+              <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label" for="inspector-notes-input" data-i18n="inspectorNotesLabel">Technician Inspection Notes</label>
+                <textarea id="inspector-notes-input" class="custom-select textarea" rows="2" placeholder="Record hardware observation, thermal state, serial numbers..."></textarea>
+              </div>
+
+              <!-- Override Pathway Dropdown -->
+              <div class="form-group">
+                <label class="form-label" for="inspection-override-pathway" data-i18n="overrideSuggestion">Accepted Pathway</label>
+                <div class="select-wrapper">
+                  <select id="inspection-override-pathway" class="custom-select"></select>
+                  <div class="select-chevron">▼</div>
+                </div>
+              </div>
+
+              <button type="button" id="btn-submit-inspection" class="btn-primary">
+                <span data-i18n="btnSubmitInspection">Record Hardware Inspection 🔬</span>
+              </button>
+            </div>
+
+            <!-- Stage 4 Final Outcome Recording & Evidence -->
+            <div id="outcome-form-card" class="console-card" style="margin-top: 14px;">
+              <h5 data-i18n="outcomeRecordingTitle">Stage 4: Final Circular Outcome & Evidence</h5>
+              
+              <div class="form-group">
+                <label class="form-label" for="outcome-pathway-select" data-i18n="finalPathwayLabel">Final Recorded Pathway</label>
+                <div class="select-wrapper">
+                  <select id="outcome-pathway-select" class="custom-select"></select>
+                  <div class="select-chevron">▼</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="outcome-org-select" data-i18n="handlingOrgLabel">Organisation Handling Device</label>
+                <div class="select-wrapper">
+                  <select id="outcome-org-select" class="custom-select"></select>
+                  <div class="select-chevron">▼</div>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label class="form-label" for="outcome-cost-input" data-i18n="repairCostPaidLabel">Cost Paid (₹)</label>
+                  <input type="number" id="outcome-cost-input" class="custom-select" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="outcome-newprice-input" data-i18n="comparableNewPriceLabel">New Price (₹)</label>
+                  <input type="number" id="outcome-newprice-input" class="custom-select" placeholder="15000" min="0">
+                </div>
+              </div>
+
+              <!-- Evidence Upload -->
+              <div class="form-group">
+                <label class="form-label" data-i18n="evidenceUploadLabel">Attach Evidence (Receipt / Invoice / Certificate)</label>
+                <div class="photo-upload-section">
+                  <label class="photo-upload-btn" for="evidence-file-input">
+                    📄 <span>Choose Receipt / Certificate Image</span>
+                  </label>
+                  <input type="file" id="evidence-file-input" accept="image/*,.pdf" style="display: none;">
+                  <div id="evidence-file-preview-wrap" class="photo-preview-container" style="display: none;">
+                    <img id="evidence-preview-img" src="" alt="Evidence preview">
+                    <span id="evidence-filename-display" class="evidence-filename">file.jpg</span>
+                    <button type="button" id="btn-remove-evidence" class="btn-remove-photo">✕</button>
+                  </div>
+                </div>
+                <small style="color: #64748B; font-size: 11px;">Simulated upload: stored as preview data URL in localStorage.</small>
+              </div>
+
+              <div class="outcome-actions-grid">
+                <button type="button" id="btn-record-outcome" class="btn-secondary">
+                  <span data-i18n="btnRecordOutcome">Record Outcome 📋</span>
+                </button>
+                <button type="button" id="btn-verify-outcome" class="btn-primary">
+                  <span data-i18n="btnVerifyOutcome">Verify Outcome & Impact ✅</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: SUSTAINABILITY DASHBOARD -->
+        <div id="view-sustainability-dashboard" class="tracker-tab-view" style="display: none;">
+          <!-- Summary Header -->
+          <div class="sustainability-hero-box">
+            <div class="sustainability-badge">🌱 Audit-Verified Circular Metrics</div>
+            <h3 data-i18n="sustainabilityDashboardTitle">Verified Sustainability Dashboard</h3>
+            <p id="sustainability-summary-sentence" class="sustainability-sentence">
+              Loading verified circular impact...
+            </p>
+          </div>
+
+          <!-- Data Integrity: Verified vs Pending Counts -->
+          <div class="integrity-counters-card">
+            <div class="integrity-col verified">
+              <span class="integrity-num" id="metric-verified-count">0</span>
+              <span class="integrity-label" data-i18n="verifiedCount">Verified Outcomes</span>
+              <span class="integrity-sub">Counted in official impact</span>
+            </div>
+            <div class="integrity-divider"></div>
+            <div class="integrity-col pending">
+              <span class="integrity-num" id="metric-pending-count">0</span>
+              <span class="integrity-label" data-i18n="pendingCount">Pending Verification</span>
+              <span class="integrity-sub">Excluded until verified</span>
+            </div>
+          </div>
+
+          <!-- SVG Donut Chart for Outcome Distribution -->
+          <div class="chart-container-card">
+            <h5 data-i18n="outcomeDistributionTitle">Verified Outcome Distribution</h5>
+            <div class="donut-chart-wrap">
+              <svg id="sustainability-donut-svg" width="160" height="160" viewBox="0 0 160 160" class="donut-svg"></svg>
+              <div id="donut-legend" class="donut-legend"></div>
+            </div>
+          </div>
+
+          <!-- Verified Metrics Breakdown Grid -->
+          <div class="sustainability-metrics-grid">
+            <div class="sust-card">
+              <div class="sust-icon">🛠️</div>
+              <div class="sust-val" id="sust-metric-repaired">0</div>
+              <div class="sust-label" data-i18n="verifiedRepaired">Repaired & Returned</div>
+            </div>
+            <div class="sust-card">
+              <div class="sust-icon">💰</div>
+              <div class="sust-val" id="sust-metric-reused">0</div>
+              <div class="sust-label" data-i18n="verifiedReused">Refurbished / Resold</div>
+            </div>
+            <div class="sust-card">
+              <div class="sust-icon">🎓</div>
+              <div class="sust-val" id="sust-metric-donated">0</div>
+              <div class="sust-label" data-i18n="verifiedDonated">Donated to Education</div>
+            </div>
+            <div class="sust-card">
+              <div class="sust-icon">🧩</div>
+              <div class="sust-val" id="sust-metric-parts">0</div>
+              <div class="sust-label" data-i18n="verifiedPartsRecovered">Parts Recovered</div>
+            </div>
+            <div class="sust-card full">
+              <div class="sust-icon">♻️</div>
+              <div class="sust-val" id="sust-metric-recycled">0</div>
+              <div class="sust-label" data-i18n="verifiedRecycled">Zero-Landfill Recycled</div>
+            </div>
+          </div>
+
+          <!-- Verified User Savings Card -->
+          <div class="sust-savings-card">
+            <div class="sust-savings-left">
+              <span class="sust-savings-eyebrow" data-i18n="verifiedSavings">Verified User Savings</span>
+              <h2 id="sust-metric-savings" class="sust-savings-val">₹0</h2>
+              <span class="sust-savings-sub">Calculated from verified repair and resale transactions</span>
+            </div>
+            <div class="sust-savings-icon">💵</div>
+          </div>
+
+          <!-- Ecological Impact (CO2 and E-Waste) with Method Tooltip -->
+          <div class="sust-eco-card">
+            <div class="eco-card-header">
+              <span class="eco-card-title">Environmental Abatement (Verified)</span>
+              <button type="button" id="btn-method-tooltip" class="method-tooltip-btn">
+                ℹ️ <span data-i18n="methodTooltipLabel">Method</span>
+              </button>
+            </div>
+            <div class="eco-metrics-row">
+              <div class="eco-stat">
+                <span class="eco-stat-val" id="sust-metric-co2">0 kg</span>
+                <span class="eco-stat-label">CO₂ Prevented</span>
+              </div>
+              <div class="eco-stat">
+                <span class="eco-stat-val" id="sust-metric-ewaste">0 kg</span>
+                <span class="eco-stat-label">E-Waste Diverted</span>
+              </div>
+            </div>
+            <p class="eco-caveat">Estimated, based on average device figures</p>
+
+            <div id="method-modal-box" class="method-modal-box" style="display: none;">
+              <strong data-i18n="methodologyTitle">Carbon & E-Waste Methodology:</strong>
+              <p data-i18n="methodologyText">Figures based on average Indian electronics lifecycle assessments: 60kg CO₂ / 0.2kg e-waste per phone, 200kg CO₂ / 2.5kg e-waste per laptop. Unverified devices are strictly excluded.</p>
+            </div>
+          </div>
+
+          <!-- Separation of Estimated Demo Flow vs Verified Tracked Devices -->
+          <div class="demo-vs-verified-note">
+            <p><strong>Note on Integrity:</strong> The Community Impact Dashboard on Screen 5 records preliminary assessment estimates; this Sustainability Dashboard counts <em>only tamper-evident, audit-verified device outcomes</em> with attached chain-of-custody evidence.</p>
+          </div>
+        </div>
+
+      </section>
+
     </main>
 
     <!-- Booking / Handover Scheduling Modal -->
@@ -826,6 +1305,9 @@
           <button type="button" id="modal-done-btn" class="btn-primary" data-i18n="closeBtn">Done</button>
         </div>
 
+      </div>
+    </div>
+
     <!-- Component Handover Request Modal -->
     <div id="part-request-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="part-modal-title">
       <div class="modal-dialog">
@@ -881,6 +1363,237 @@
           <button type="button" id="btn-part-done" class="btn-primary" data-i18n="closeBtn">Done</button>
         </div>
 
+      </div>
+    </div>
+
+    <!-- 1. Add Custom Device Model Modal -->
+    <div id="custom-model-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="custom-model-title" style="display: none;">
+      <div class="modal-dialog">
+        <button id="btn-close-custom-model" class="modal-close-btn" aria-label="Close dialog">✕</button>
+        <div class="modal-header">
+          <h3 id="custom-model-title" data-i18n="customModelModalTitle">Add Custom Device Model</h3>
+          <p style="font-size: 12px; color: #64748B; margin-top: 4px;" data-i18n="customModelSubtitle">
+            Add any phone or laptop not listed in the default catalog.
+          </p>
+        </div>
+        <form id="custom-model-form">
+          <div class="form-group">
+            <label class="form-label" for="custom-device-type" data-i18n="customDeviceTypeLabel">Device Category</label>
+            <div class="select-wrapper">
+              <select id="custom-device-type" class="custom-select" required>
+                <option value="phone" data-i18n="devicePhone">Smartphone</option>
+                <option value="laptop" data-i18n="deviceLaptop">Laptop</option>
+              </select>
+              <div class="select-chevron">▼</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="custom-device-brand" data-i18n="customBrandLabel">Brand / Manufacturer</label>
+            <input type="text" id="custom-device-brand" class="custom-select" placeholder="e.g. OnePlus, Asus, HP, Acer" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="custom-device-name" data-i18n="customModelLabel">Model Name</label>
+            <input type="text" id="custom-device-name" class="custom-select" placeholder="e.g. Nord CE 2 5G, ZenBook 14" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="custom-device-price" data-i18n="customPriceLabel">Benchmark New Price (₹)</label>
+            <input type="number" id="custom-device-price" class="custom-select" placeholder="e.g. 24999" min="1000" step="500" required>
+            <span class="field-hint" data-i18n="customPriceHint">Used to compute repair savings against replacement.</span>
+          </div>
+          <button type="submit" id="btn-save-custom-model" class="btn-primary" style="margin-top: 8px;">
+            <span data-i18n="saveCustomModelBtn">Save & Select Model</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. Stage 1: Device Registration Modal -->
+    <div id="device-register-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="reg-modal-title" style="display: none;">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <button id="btn-close-register-modal" class="modal-close-btn" aria-label="Close dialog">✕</button>
+        <div class="modal-header">
+          <div class="stage-pill stage-pill-1">Stage 1: Registration</div>
+          <h3 id="reg-modal-title" data-i18n="regModalTitle">Register Device for Journey Tracking</h3>
+          <p style="font-size: 12px; color: #64748B; margin-top: 4px;" data-i18n="regModalSubtitle">
+            Assign an auditable Circular ID and QR Passport for end-to-end chain of custody.
+          </p>
+        </div>
+        <form id="device-registration-form">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="reg-device-type" data-i18n="regDeviceType">Device Type</label>
+              <div class="select-wrapper">
+                <select id="reg-device-type" class="custom-select" required>
+                  <option value="laptop" data-i18n="deviceLaptop">Laptop</option>
+                  <option value="phone" data-i18n="devicePhone">Smartphone</option>
+                </select>
+                <div class="select-chevron">▼</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-device-brand" data-i18n="regBrand">Brand</label>
+              <input type="text" id="reg-device-brand" class="custom-select" placeholder="e.g. Dell, Apple, Samsung" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-device-model" data-i18n="regModel">Model Description</label>
+            <input type="text" id="reg-device-model" class="custom-select" placeholder="e.g. Inspiron 15 3511 / iPhone 11" required>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="reg-device-condition" data-i18n="regCondition">Condition</label>
+              <div class="select-wrapper">
+                <select id="reg-device-condition" class="custom-select" required>
+                  <option value="Working" data-i18n="condWorking">Working</option>
+                  <option value="Partly working" data-i18n="condPartlyWorking" selected>Partly working</option>
+                  <option value="Not working" data-i18n="condNotWorking">Not working</option>
+                </select>
+                <div class="select-chevron">▼</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-device-age" data-i18n="regAge">Approx Age (Years)</label>
+              <input type="number" id="reg-device-age" class="custom-select" min="0" max="25" value="3" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reg-device-problem" data-i18n="regProblem">Reported Issue / Problem</label>
+            <input type="text" id="reg-device-problem" class="custom-select" placeholder="e.g. Battery depleted, cracked screen, power failure" required>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="reg-owner-name" data-i18n="regOwnerName">Owner Name (Optional)</label>
+              <input type="text" id="reg-owner-name" class="custom-select" placeholder="e.g. Rajesh K.">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-device-area" data-i18n="regArea">Area / Locality</label>
+              <input type="text" id="reg-device-area" class="custom-select" placeholder="e.g. T. Nagar, Chennai" required>
+            </div>
+          </div>
+
+          <!-- Data Safety Mandatory Gate -->
+          <div class="safety-gate-card">
+            <label class="safety-checkbox-label">
+              <input type="checkbox" id="reg-data-safety-check" required>
+              <span class="safety-check-text">
+                <strong data-i18n="regSafetyConfirmed">I have backed up and wiped my personal data.</strong>
+                <span class="safety-subtext" data-i18n="regSafetyNotice">Ensure accounts, photos and credentials are removed before handing over.</span>
+              </span>
+            </label>
+            <div class="safety-wizard-link-box">
+              <button type="button" id="btn-open-safety-wizard-from-reg" class="link-btn-text">
+                🛡️ <span data-i18n="openSafetyWizardLink">Open 3-Step Data Safety Wizard</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit-registration" class="btn-primary" style="margin-top: 14px;">
+            <span data-i18n="generatePassportBtn">Generate Device Passport & QR Code</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 3. Device Passport Printable Label Modal -->
+    <div id="passport-label-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="label-modal-title" style="display: none;">
+      <div class="modal-dialog">
+        <button id="btn-close-label-modal" class="modal-close-btn" aria-label="Close dialog">✕</button>
+        <div class="modal-header">
+          <h3 id="label-modal-title" data-i18n="passportLabelTitle">Device Circular Passport</h3>
+          <p style="font-size: 12px; color: #64748B; margin-top: 4px;" data-i18n="passportLabelSubtitle">
+            Attach this QR label to the physical device for scanner verification.
+          </p>
+        </div>
+
+        <!-- Printable Asset Tag Box -->
+        <div id="printable-passport-tag" class="printable-tag-card">
+          <div class="tag-header">
+            <div class="tag-logo">♻️ RELIFE PASSPORT</div>
+            <div class="tag-sub">CIRCULAR ASSET TRACKER</div>
+          </div>
+          <div class="tag-body">
+            <div class="tag-qr-wrap">
+              <div id="passport-label-qr" class="qr-canvas-holder"></div>
+              <span class="tag-scan-hint">Scan with phone camera</span>
+            </div>
+            <div class="tag-details">
+              <div class="tag-id-badge" id="tag-display-id">EW-1005</div>
+              <div class="tag-meta-item">
+                <span class="tag-lbl" data-i18n="labelDevice">Device:</span>
+                <strong id="tag-display-device">Dell Inspiron 15</strong>
+              </div>
+              <div class="tag-meta-item">
+                <span class="tag-lbl" data-i18n="labelStatus">Current Stage:</span>
+                <span id="tag-display-status" class="stage-tag-badge">Stage 1: Registered</span>
+              </div>
+              <div class="tag-meta-item">
+                <span class="tag-lbl" data-i18n="labelDate">Registered:</span>
+                <span id="tag-display-date">29 Oct 2026</span>
+              </div>
+              <div class="tag-meta-item">
+                <span class="tag-lbl" data-i18n="labelSafety">Data Wiped:</span>
+                <span class="tag-verified-check">✓ Confirmed</span>
+              </div>
+            </div>
+          </div>
+          <div class="tag-footer">
+            <span>TAMPER-EVIDENT AUDIT TRAIL • LOCALSTORAGE ZERO-BACKEND</span>
+          </div>
+        </div>
+
+        <div class="tag-actions-row">
+          <button type="button" id="btn-print-passport-tag" class="btn-primary" style="margin-top: 12px;">
+            🖨️ <span data-i18n="printLabelBtn">Print Asset Label</span>
+          </button>
+          <button type="button" id="btn-view-journey-from-tag" class="btn-outline" style="margin-top: 8px;">
+            📍 <span data-i18n="viewJourneyTimelineBtn">View Journey Timeline</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Simulated QR / Barcode Scanner Modal -->
+    <div id="barcode-scanner-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="scanner-modal-title" style="display: none;">
+      <div class="modal-dialog">
+        <button id="btn-close-scanner-modal" class="modal-close-btn" aria-label="Close dialog">✕</button>
+        <div class="modal-header">
+          <h3 id="scanner-modal-title" data-i18n="scannerModalTitle">Scan Device Passport QR</h3>
+          <p style="font-size: 12px; color: #64748B; margin-top: 4px;" data-i18n="scannerModalSubtitle">
+            Simulate optical camera scanning or select an active registered circular ID.
+          </p>
+        </div>
+
+        <div class="scanner-viewfinder">
+          <div class="scanner-frame">
+            <div class="scanner-corner top-left"></div>
+            <div class="scanner-corner top-right"></div>
+            <div class="scanner-corner bottom-left"></div>
+            <div class="scanner-corner bottom-right"></div>
+            <div class="scanner-laser"></div>
+          </div>
+          <p class="scanner-status" data-i18n="scannerActiveText">📷 Optical QR Detector Active</p>
+        </div>
+
+        <div class="scanner-input-section">
+          <div class="form-group">
+            <label class="form-label" for="scanner-select-device" data-i18n="scannerQuickSelect">Quick Select Pending ID</label>
+            <div class="select-wrapper">
+              <select id="scanner-select-device" class="custom-select"></select>
+              <div class="select-chevron">▼</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="scanner-manual-input" data-i18n="scannerManualInput">Or Enter Device ID</label>
+            <input type="text" id="scanner-manual-input" class="custom-select" placeholder="e.g. EW-1005">
+          </div>
+          <button type="button" id="btn-confirm-simulated-scan" class="btn-primary" style="margin-top: 10px;">
+            ⚡ <span data-i18n="scannerConfirmBtn">Confirm Scanned Device</span>
+          </button>
+        </div>
       </div>
     </div>
 

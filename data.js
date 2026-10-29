@@ -767,6 +767,324 @@ const RELIFE_DATA = {
     }
   ],
 
+  // ===================================================================
+  // E-WASTE JOURNEY TRACKER DATA STRUCTURES
+  // ===================================================================
+
+  // 5 Journey Stages
+  journeyStages: [
+    { id: "registered", name: "Registered", step: 1, icon: "📝", color: "#2563EB" },
+    { id: "collected", name: "Collected", step: 2, icon: "🚚", color: "#6366F1" },
+    { id: "inspected", name: "Inspected", step: 3, icon: "🔬", color: "#F59E0B" },
+    { id: "outcome_recorded", name: "Outcome Recorded", step: 4, icon: "📋", color: "#8B5CF6" },
+    { id: "completed_verified", name: "Completed - Verified", step: 5, icon: "✅", color: "#10B981" }
+  ],
+
+  // Inspection Checklist Components (8 key modules)
+  inspectionComponents: [
+    { id: "screen", name: "Screen / Display Panel", icon: "🖥️", keyModule: true },
+    { id: "battery", name: "Lithium Battery Pack", icon: "🔋", keyModule: true, hazardCheck: true },
+    { id: "ram", name: "RAM / Memory Module", icon: "🧠", keyModule: true },
+    { id: "storage", name: "SSD / Storage Drive", icon: "💾", keyModule: true },
+    { id: "motherboard", name: "Motherboard / Logic Board", icon: "🧩", keyModule: true },
+    { id: "charger_port", name: "Power Port / Charging IC", icon: "🔌", keyModule: false },
+    { id: "keyboard", name: "Keyboard / Trackpad", icon: "⌨️", keyModule: false },
+    { id: "camera", name: "Front & Rear Camera", icon: "📷", keyModule: false }
+  ],
+
+  // 5 Pathway Options for Final Outcome
+  pathwayOptions: [
+    { id: "repaired", name: "Repaired and returned", icon: "🛠️", category: "repair" },
+    { id: "refurbished", name: "Refurbished and resold", icon: "💰", category: "reuse" },
+    { id: "donated", name: "Donated to learning/schools", icon: "🎓", category: "donation" },
+    { id: "parts_recovered", name: "Parts recovered for reuse", icon: "🧩", category: "parts" },
+    { id: "recycled", name: "Recycled (CPCB authorized)", icon: "♻️", category: "recycle" }
+  ],
+
+  // Environmental Conversion Factors (per verified outcome)
+  impactFactors: {
+    phone: { co2: 60, ewaste: 0.2 },
+    laptop: { co2: 200, ewaste: 2.5 },
+    part: { co2: 15, ewaste: 0.15 },
+    methodology: "Factors based on average Indian lifecycle carbon & electronic material extraction figures (CPCB & ELCITA data)."
+  },
+
+  // 6 Seeded Tracked Devices at Diverse Stages (Demo Data)
+  seedTrackedDevices: [
+    {
+      id: "EW-1001",
+      deviceType: "laptop",
+      brand: "Dell",
+      model: "Dell Inspiron 3511",
+      deviceId: "dell_inspiron_3511",
+      condition: "Partly working",
+      problem: "Slow performance & battery wear",
+      ageYears: 4,
+      ownerName: "Sundar Rajan",
+      area: "Chengalpattu",
+      dataSafetyConfirmed: true,
+      currentStage: "completed_verified",
+      stageStep: 5,
+      isVerified: true,
+      verifiedAt: "28 Oct 2026, 04:30 PM",
+      verifiedBy: "Inspector Selvam (EcoFix Tech Lab)",
+      isDemo: true,
+      handoverType: "pickup",
+      collectionDetails: {
+        collectorName: "Muthu Logistics",
+        organization: "EcoFix Chengalpattu Tech Lab",
+        collectedAt: "25 Oct 2026, 11:15 AM",
+        location: "Chengalpattu Town"
+      },
+      inspectionDetails: {
+        boots: true,
+        inspectedAt: "26 Oct 2026, 02:40 PM",
+        inspectorName: "Selvam Tech Lead",
+        components: {
+          screen: "working",
+          battery: "damaged",
+          ram: "working",
+          storage: "working",
+          motherboard: "working",
+          charger_port: "working",
+          keyboard: "working",
+          camera: "working"
+        },
+        suggestedPathway: "donated",
+        inspectorNotes: "Replaced battery, upgraded thermal paste. Perfectly adequate for high school digital education."
+      },
+      outcomeDetails: {
+        pathway: "donated",
+        organization: "Kalvi Digital School Outreach",
+        recordedAt: "27 Oct 2026, 05:00 PM",
+        repairCost: 3200,
+        newPrice: 42500,
+        userSaved: 39300,
+        evidenceName: "Kalvi_Donation_Receipt_2026.pdf",
+        evidenceDataUrl: null
+      },
+      timeline: [
+        { stage: "registered", label: "Registered", timestamp: "24 Oct 2026, 10:20 AM", actor: "Owner (Sundar Rajan)", notes: "Data-safety wizard verified & sealed." },
+        { stage: "collected", label: "Collected", timestamp: "25 Oct 2026, 11:15 AM", actor: "Muthu (EcoFix Logistics)", notes: "Safe non-metal packaging used." },
+        { stage: "inspected", label: "Inspected", timestamp: "26 Oct 2026, 02:40 PM", actor: "Selvam (EcoFix Lab)", notes: "Hardware booted. Old battery sent for recycling. Ready for school donation." },
+        { stage: "outcome_recorded", label: "Outcome Recorded", timestamp: "27 Oct 2026, 05:00 PM", actor: "Kalvi Outreach", notes: "Allocated to Class 10 student laboratory." },
+        { stage: "completed_verified", label: "Completed - Verified", timestamp: "28 Oct 2026, 04:30 PM", actor: "Auditor Selvam", notes: "Donation receipt verified. Circular impact counted." }
+      ]
+    },
+    {
+      id: "EW-1002",
+      deviceType: "phone",
+      brand: "Xiaomi",
+      model: "Redmi Note 11",
+      deviceId: "redmi_note_11",
+      condition: "Working",
+      problem: "Battery drains rapidly",
+      ageYears: 3,
+      ownerName: "Kavitha M.",
+      area: "Tambaram",
+      dataSafetyConfirmed: true,
+      currentStage: "collected",
+      stageStep: 2,
+      isVerified: false,
+      isDemo: true,
+      handoverType: "pickup",
+      collectionDetails: {
+        collectorName: "Ramesh K.",
+        organization: "Tambaram Green Mobile Hospital",
+        collectedAt: "28 Oct 2026, 10:30 AM",
+        location: "Tambaram West"
+      },
+      timeline: [
+        { stage: "registered", label: "Registered", timestamp: "27 Oct 2026, 03:15 PM", actor: "Owner (Kavitha M.)", notes: "Factory reset performed & Google FRP removed." },
+        { stage: "collected", label: "Collected", timestamp: "28 Oct 2026, 10:30 AM", actor: "Ramesh (Tambaram Mobile)", notes: "Doorstep pickup completed." }
+      ]
+    },
+    {
+      id: "EW-1003",
+      deviceType: "laptop",
+      brand: "HP",
+      model: "HP 15s (Intel Core i3)",
+      deviceId: "hp_15s",
+      condition: "Not working",
+      problem: "Water damage & motherboard failure",
+      ageYears: 4,
+      ownerName: "Arun Kumar",
+      area: "Guindy",
+      dataSafetyConfirmed: true,
+      currentStage: "inspected",
+      stageStep: 3,
+      isVerified: false,
+      isDemo: true,
+      handoverType: "dropoff",
+      collectionDetails: {
+        collectorName: "Counter Staff",
+        organization: "ReNew Hub Chennai",
+        collectedAt: "26 Oct 2026, 01:20 PM",
+        location: "Guindy Industrial Estate"
+      },
+      inspectionDetails: {
+        boots: false,
+        inspectedAt: "27 Oct 2026, 11:00 AM",
+        inspectorName: "Karthik Senior Eng.",
+        components: {
+          screen: "damaged",
+          battery: "damaged",
+          ram: "working",
+          storage: "working",
+          motherboard: "damaged",
+          charger_port: "damaged",
+          keyboard: "damaged",
+          camera: "working"
+        },
+        suggestedPathway: "parts_recovered",
+        inspectorNotes: "Motherboard heavily corroded. However, 8GB DDR4 RAM and 256GB SSD are in perfect health. Harvested for Component Rescue."
+      },
+      timeline: [
+        { stage: "registered", label: "Registered", timestamp: "25 Oct 2026, 09:00 AM", actor: "Owner (Arun Kumar)", notes: "Drive wiped before drop-off." },
+        { stage: "collected", label: "Collected", timestamp: "26 Oct 2026, 01:20 PM", actor: "ReNew Hub Drop-off", notes: "Received at front desk." },
+        { stage: "inspected", label: "Inspected", timestamp: "27 Oct 2026, 11:00 AM", actor: "Karthik (Engineer)", notes: "RAM & SSD salvaged. Damaged battery routed to certified recycler." }
+      ]
+    },
+    {
+      id: "EW-1004",
+      deviceType: "phone",
+      brand: "Samsung",
+      model: "Samsung Galaxy M31",
+      deviceId: "samsung_m31",
+      condition: "Not working",
+      problem: "Severe water damage & broken screen",
+      ageYears: 5,
+      ownerName: "Deepak S.",
+      area: "Chromepet",
+      dataSafetyConfirmed: true,
+      currentStage: "completed_verified",
+      stageStep: 5,
+      isVerified: true,
+      verifiedAt: "28 Oct 2026, 02:00 PM",
+      verifiedBy: "Certified Officer Anand (CPCB TN)",
+      isDemo: true,
+      handoverType: "dropoff",
+      collectionDetails: {
+        collectorName: "Collection Depot A",
+        organization: "EnviroGreen CPCB Recyclers",
+        collectedAt: "24 Oct 2026, 03:45 PM",
+        location: "Chromepet GST Road"
+      },
+      inspectionDetails: {
+        boots: false,
+        inspectedAt: "25 Oct 2026, 10:15 AM",
+        inspectorName: "Technician Murugan",
+        components: {
+          screen: "damaged",
+          battery: "damaged",
+          ram: "damaged",
+          storage: "damaged",
+          motherboard: "damaged",
+          charger_port: "damaged",
+          keyboard: "damaged",
+          camera: "damaged"
+        },
+        suggestedPathway: "recycled",
+        inspectorNotes: "Irreparable physical & liquid damage across all sub-modules. Slated for hydrometallurgical rare earth recovery."
+      },
+      outcomeDetails: {
+        pathway: "recycled",
+        organization: "EnviroGreen CPCB Recyclers",
+        recordedAt: "27 Oct 2026, 04:30 PM",
+        repairCost: 0,
+        newPrice: 16499,
+        userSaved: 0,
+        evidenceName: "CPCB_Recycle_Certificate_774.pdf",
+        evidenceDataUrl: null
+      },
+      timeline: [
+        { stage: "registered", label: "Registered", timestamp: "23 Oct 2026, 11:00 AM", actor: "Owner (Deepak S.)", notes: "Device scheduled for eco-recycling." },
+        { stage: "collected", label: "Collected", timestamp: "24 Oct 2026, 03:45 PM", actor: "EnviroGreen Depot", notes: "Secure containment batch #774." },
+        { stage: "inspected", label: "Inspected", timestamp: "25 Oct 2026, 10:15 AM", actor: "Murugan Tech", notes: "Zero recovery potential. Sent to shredder line." },
+        { stage: "outcome_recorded", label: "Outcome Recorded", timestamp: "27 Oct 2026, 04:30 PM", actor: "EnviroGreen Facility", notes: "Materials pulverized into copper, gold, and glass pellets." },
+        { stage: "completed_verified", label: "Completed - Verified", timestamp: "28 Oct 2026, 02:00 PM", actor: "CPCB Auditor Anand", notes: "Zero-landfill certificate issued." }
+      ]
+    },
+    {
+      id: "EW-1005",
+      deviceType: "phone",
+      brand: "Apple",
+      model: "Apple iPhone 11",
+      deviceId: "iphone_11",
+      condition: "Partly working",
+      problem: "Cracked screen & glass shatter",
+      ageYears: 3,
+      ownerName: "Pooja V.",
+      area: "Chengalpattu",
+      dataSafetyConfirmed: true,
+      currentStage: "outcome_recorded",
+      stageStep: 4,
+      isVerified: false,
+      isDemo: true,
+      handoverType: "pickup",
+      collectionDetails: {
+        collectorName: "Express Pickup Desk",
+        organization: "EcoFix Chengalpattu Tech Lab",
+        collectedAt: "27 Oct 2026, 09:30 AM",
+        location: "Chengalpattu"
+      },
+      inspectionDetails: {
+        boots: true,
+        inspectedAt: "27 Oct 2026, 03:15 PM",
+        inspectorName: "Senior Tech Vasanth",
+        components: {
+          screen: "damaged",
+          battery: "working",
+          ram: "working",
+          storage: "working",
+          motherboard: "working",
+          charger_port: "working",
+          keyboard: "working",
+          camera: "working"
+        },
+        suggestedPathway: "repaired",
+        inspectorNotes: "Motherboard and FaceID camera 100% functional. Needs OEM-grade display replacement."
+      },
+      outcomeDetails: {
+        pathway: "repaired",
+        organization: "EcoFix Chengalpattu Tech Lab",
+        recordedAt: "28 Oct 2026, 06:00 PM",
+        repairCost: 5800,
+        newPrice: 41999,
+        userSaved: 36199,
+        evidenceName: "Screen_Replacement_Invoice.jpg",
+        evidenceDataUrl: null
+      },
+      timeline: [
+        { stage: "registered", label: "Registered", timestamp: "26 Oct 2026, 04:10 PM", actor: "Owner (Pooja V.)", notes: "iCloud signed out & eSIM removed." },
+        { stage: "collected", label: "Collected", timestamp: "27 Oct 2026, 09:30 AM", actor: "EcoFix Pickup", notes: "Doorstep collection confirmed." },
+        { stage: "inspected", label: "Inspected", timestamp: "27 Oct 2026, 03:15 PM", actor: "Vasanth (Tech)", notes: "Display assembly replaced and tested." },
+        { stage: "outcome_recorded", label: "Outcome Recorded", timestamp: "28 Oct 2026, 06:00 PM", actor: "EcoFix Counter", notes: "Invoice attached. Awaiting partner verification." }
+      ]
+    },
+    {
+      id: "EW-1006",
+      deviceType: "laptop",
+      brand: "Lenovo",
+      model: "Lenovo IdeaPad 3",
+      deviceId: "lenovo_ideapad_3",
+      condition: "Working",
+      problem: "Slow performance & full drive",
+      ageYears: 2,
+      ownerName: "Vijay K.",
+      area: "Chengalpattu",
+      dataSafetyConfirmed: true,
+      currentStage: "registered",
+      stageStep: 1,
+      isVerified: false,
+      isDemo: true,
+      handoverType: "dropoff",
+      timeline: [
+        { stage: "registered", label: "Registered", timestamp: "29 Oct 2026, 09:15 AM", actor: "Owner (Vijay K.)", notes: "Ready for drop-off at EcoFix Chengalpattu Tech Lab." }
+      ]
+    }
+  ],
+
   // Bilingual UI Translations: English & Tamil
   translations: {
     en: {
@@ -983,7 +1301,130 @@ const RELIFE_DATA = {
       
       // Extended Impact
       partsRescuedLabel: "Parts Rescued from Scrap",
-      repairerSavedLabel: "Repairer Savings (₹)"
+      repairerSavedLabel: "Repairer Savings (₹)",
+
+      // Journey Tracker Feature
+      navTrackerBtn: "📍 Tracker",
+      trackerTitle: "E-Waste Journey Tracker",
+      trackerSubtitle: "End-to-end device passport tracking: from registration to verified circular outcome",
+      trackerBackToFlow: "← Back to Assessment Flow",
+      btnResultToTracker: "Register This Device & Track Journey 📍",
+      btnCertToTracker: "Track This Device on Journey Tracker →",
+
+      // Roles
+      roleLabel: "Simulate Role",
+      roleOwner: "👤 Device Owner",
+      roleCollector: "🚚 Collection Partner",
+      roleInspector: "🔬 Repair-Inspection Partner",
+      roleDemoNote: "Demo roles only. Production would use verified partner accounts.",
+
+      // Tabs
+      tabMyDevices: "My Devices",
+      tabTrackById: "Track by ID",
+      tabPartnerConsole: "Partner Console",
+      tabSustainabilityDashboard: "Sustainability Dashboard",
+
+      // Stages
+      stageRegistered: "1. Registered",
+      stageCollected: "2. Collected",
+      stageInspected: "3. Inspected",
+      stageOutcomeRecorded: "4. Outcome Recorded",
+      stageCompletedVerified: "5. Completed - Verified",
+      badgeVerified: "Verified",
+      badgePending: "Pending Verification",
+
+      // Registration
+      registerDeviceTitle: "Register a Device for Journey Tracking",
+      registerDeviceSubtitle: "Generate an instant Device Passport with QR code and traceable ID",
+      regDeviceTypeLabel: "Device Type",
+      regBrandLabel: "Brand",
+      regModelLabel: "Device Model",
+      regConditionLabel: "Hardware Condition",
+      condWorking: "Working",
+      condPartlyWorking: "Partly Working",
+      condNotWorking: "Not Working / Dead",
+      regProblemLabel: "Primary Problem / Symptom",
+      regAgeLabel: "Approximate Age (Years)",
+      regOwnerNameLabel: "Owner Name (Optional)",
+      regAreaLabel: "Your Area / Location",
+      regDataSafeCheck: "I have backed up and removed my personal data",
+      regDataSafeWizardLink: "(Open Data-Safety Wizard)",
+      btnGeneratePassport: "Generate Device Passport & ID 🚀",
+      passportLabelTitle: "ReLife Device Passport Label",
+      passportIdLabel: "Device Passport ID",
+      printPassportBtn: "Print / Download Label 🖨️",
+      shareTrackBtn: "Copy Tracking Link 🔗",
+      linkCopiedToast: "Shareable tracking link copied to clipboard!",
+
+      // Handover & Collection
+      handoverModeLabel: "Handover Method",
+      handoverDropoff: "Drop at Collection Centre",
+      handoverPickup: "Request Doorstep Pickup",
+      pickupDateLabel: "Pickup Date",
+      pickupSlotLabel: "Pickup Window",
+      collectionPartnerConsoleTitle: "Collection Partner Console",
+      scanOrEnterId: "Scan or Enter Device ID",
+      btnSimScan: "📷 Scan QR Code",
+      collectorNameLabel: "Collector / Driver Name",
+      collectorOrgLabel: "Collection Organisation",
+      collectionLocationLabel: "Handover Location",
+      btnConfirmCollection: "Confirm Collection & Handover 🚚",
+      pendingPickupsTitle: "Pending Device Pickups",
+
+      // Inspection
+      inspectionConsoleTitle: "Hardware Inspection & Sorting",
+      selectInspectingDevice: "Select Device to Inspect",
+      bootOutcomeLabel: "Power & Boot Check",
+      bootsYes: "Boots into OS / BIOS",
+      bootsNo: "Does not boot (Unpowered / Dead)",
+      componentsHealthTitle: "Modular Component Health Checklist",
+      compWorking: "Working",
+      compDamaged: "Damaged",
+      compUntested: "Not Tested",
+      inspectorNotesLabel: "Technician Inspection Notes",
+      autoSuggestedPathway: "Auto-Suggested Circular Pathway",
+      acceptSuggestion: "Accept Suggestion",
+      overrideSuggestion: "Change / Override Pathway",
+      batteryDamageWarning: "⚠️ BATTERY HAZARD: Damaged or swollen lithium batteries cannot be reused. Routed automatically to certified recyclers.",
+      btnListPartsRescue: "List Working Parts on Component Rescue 🧩",
+      btnSubmitInspection: "Record Hardware Inspection 🔬",
+
+      // Outcome & Verification
+      outcomeRecordingTitle: "Final Circular Outcome & Evidence",
+      selectOutcomeDevice: "Select Inspected Device",
+      finalPathwayLabel: "Final Recorded Pathway",
+      handlingOrgLabel: "Organisation Handling Device",
+      repairCostPaidLabel: "Actual Repair / Refurb Cost Paid (₹)",
+      comparableNewPriceLabel: "Comparable New Device Price (₹)",
+      evidenceUploadLabel: "Attach Evidence (Report, Invoice, Recycler Certificate)",
+      btnRecordOutcome: "Record Outcome (Awaiting Verification) 📋",
+      btnVerifyOutcome: "Verify Outcome & Award Impact Points ✅",
+      verificationNotice: "Evidence verified. Outcome counted towards official sustainability totals.",
+
+      // Sustainability Dashboard
+      sustainabilityDashboardTitle: "Verified Sustainability Dashboard",
+      sustainabilitySubtitle: "Transparent circular metrics derived exclusively from audit-verified device outcomes",
+      verifiedVsPendingTitle: "Data Integrity: Verified vs Pending",
+      verifiedCount: "Verified Outcomes",
+      pendingCount: "Pending Verification / In-Progress",
+      verifiedSavings: "Verified User Savings (₹)",
+      verifiedRepaired: "Repaired & Returned",
+      verifiedReused: "Refurbished / Resold",
+      verifiedDonated: "Donated to Education",
+      verifiedPartsRecovered: "Parts Recovered",
+      verifiedRecycled: "Zero-Landfill Recycled",
+      methodologyTitle: "Carbon & E-Waste Methodology",
+      methodologyText: "Figures based on average Indian electronics lifecycle assessments: 60kg CO₂ / 0.2kg e-waste per phone, 200kg CO₂ / 2.5kg e-waste per laptop. Unverified devices are strictly excluded.",
+      outcomeDistributionTitle: "Outcome Distribution",
+
+      // Custom Device Addition
+      btnAddCustomModel: "+ Add Custom Model",
+      customModelModalTitle: "Add Custom Device Model",
+      customDeviceTypeLabel: "Device Category",
+      customBrandLabel: "Brand / Manufacturer",
+      customModelNameLabel: "Model Name",
+      customMSRPLabel: "Original / New Market Price (₹)",
+      btnSaveCustomModel: "Save & Select Device ➕"
     },
 
     ta: {
@@ -1200,7 +1641,130 @@ const RELIFE_DATA = {
 
       // Extended Impact
       partsRescuedLabel: "குப்பையிலிருந்து மீட்கப்பட்ட பாகங்கள்",
-      repairerSavedLabel: "பழுதுபார்ப்பவர்கள் சேமித்த ரூபாய் (₹)"
+      repairerSavedLabel: "பழுதுபார்ப்பவர்கள் சேமித்த ரூபாய் (₹)",
+
+      // Journey Tracker Feature
+      navTrackerBtn: "📍 கண்காணிப்பான்",
+      trackerTitle: "மின்-கழிவு பயணக் கண்காணிப்பான்",
+      trackerSubtitle: "சாதன பாஸ்போர்ட் முழுமையான கண்காணிப்பு: பதிவு முதல் சான்றளிக்கப்பட்ட முடிவு வரை",
+      trackerBackToFlow: "← மதிப்பீட்டு ஓட்டத்திற்குத் திரும்பு",
+      btnResultToTracker: "இந்த சாதனத்தைப் பதிவு செய்து கண்காணிக்கவும் 📍",
+      btnCertToTracker: "இந்த சாதனத்தை கண்காணிப்பில் தொடரவும் →",
+
+      // Roles
+      roleLabel: "மாதிரி பங்கு",
+      roleOwner: "👤 சாதன உரிமையாளர்",
+      roleCollector: "🚚 சேகரிப்பு பங்குதாரர்",
+      roleInspector: "🔬 பழுது & ஆய்வு பங்குதாரர்",
+      roleDemoNote: "டெமோ பங்குகள் மட்டுமே. நிஜத்தில் சரிபார்க்கப்பட்ட பங்குதாரர் கணக்குகள் பயன்படும்.",
+
+      // Tabs
+      tabMyDevices: "என் சாதனங்கள்",
+      tabTrackById: "எண் மூலம் தேடு",
+      tabPartnerConsole: "பங்குதாரர் கன்சோல்",
+      tabSustainabilityDashboard: "நிலைத்தன்மை டாஷ்போர்டு",
+
+      // Stages
+      stageRegistered: "1. பதிவு செய்யப்பட்டது",
+      stageCollected: "2. சேகரிக்கப்பட்டது",
+      stageInspected: "3. ஆய்வு செய்யப்பட்டது",
+      stageOutcomeRecorded: "4. முடிவு பதிவு செய்யப்பட்டது",
+      stageCompletedVerified: "5. நிறைவு - சான்றளிக்கப்பட்டது",
+      badgeVerified: "சான்றளிக்கப்பட்டது",
+      badgePending: "சரிபார்ப்பு நிலுவையில்",
+
+      // Registration
+      registerDeviceTitle: "பயணக் கண்காணிப்பிற்கு சாதனத்தைப் பதிவு செய்க",
+      registerDeviceSubtitle: "QR குறியீடு மற்றும் கண்காணிப்பு எண்ணுடன் உடனடி சாதன பாஸ்போர்ட் உருவாக்கவும்",
+      regDeviceTypeLabel: "சாதன வகை",
+      regBrandLabel: "பிராண்ட்",
+      regModelLabel: "சாதன மாதிரி",
+      regConditionLabel: "சாதனத்தின் நிலை",
+      condWorking: "இயங்குகிறது",
+      condPartlyWorking: "ஓரளவு இயங்குகிறது",
+      condNotWorking: "இயங்கவில்லை / செயலிழந்தது",
+      regProblemLabel: "முதன்மை சிக்கல் / குறைபாடு",
+      regAgeLabel: "தோராயமான வயது (ஆண்டுகள்)",
+      regOwnerNameLabel: "உரிமையாளர் பெயர் (விருப்பத்திற்குரியது)",
+      regAreaLabel: "உங்கள் பகுதி / ஊர்",
+      regDataSafeCheck: "என் தனிப்பட்ட தரவை காப்புப் பிரதி எடுத்து முழுமையாக அழித்துவிட்டேன்",
+      regDataSafeWizardLink: "(தரவு பாதுகாப்பு வழிகாட்டியைத் திற)",
+      btnGeneratePassport: "சாதன பாஸ்போர்ட் & ஐடி உருவாக்குக 🚀",
+      passportLabelTitle: "ரீலைஃப் சாதன பாஸ்போர்ட் லேபிள்",
+      passportIdLabel: "சாதன பாஸ்போர்ட் எண்",
+      printPassportBtn: "லேபிளை அச்சிடு / பதிவிறக்கு 🖨️",
+      shareTrackBtn: "கண்காணிப்பு இணைப்பை நகலெடு 🔗",
+      linkCopiedToast: "கண்காணிப்பு இணைப்பு நகலெடுக்கப்பட்டது!",
+
+      // Handover & Collection
+      handoverModeLabel: "ஒப்படைப்பு முறை",
+      handoverDropoff: "சேகரிப்பு மையத்தில் நேரடியாக ஒப்படைக்க",
+      handoverPickup: "வீட்டுக்கே வந்து சேகரிக்க கோரிக்கை",
+      pickupDateLabel: "சேகரிப்பு தேதி",
+      pickupSlotLabel: "நேர இடைவெளி",
+      collectionPartnerConsoleTitle: "சேகரிப்பு பங்குதாரர் கன்சோல்",
+      scanOrEnterId: "சாதன ஐடியை ஸ்கேன் செய் அல்லது உள்ளிடுக",
+      btnSimScan: "📷 QR குறியீட்டை ஸ்கேன் செய்",
+      collectorNameLabel: "சேகரிப்பாளர் / ஓட்டுநர் பெயர்",
+      collectorOrgLabel: "சேகரிப்பு நிறுவனம்",
+      collectionLocationLabel: "ஒப்படைப்பு இடம்",
+      btnConfirmCollection: "சேகரிப்பை உறுதி செய்க 🚚",
+      pendingPickupsTitle: "நிலுவையில் உள்ள சேகரிப்புகள்",
+
+      // Inspection
+      inspectionConsoleTitle: "வன்பொருள் ஆய்வு & தரம் பிரித்தல்",
+      selectInspectingDevice: "ஆய்வு செய்ய வேண்டிய சாதனத்தைத் தேர்வு செய்க",
+      bootOutcomeLabel: "மின்சாரம் & பூட் சோதனை",
+      bootsYes: "OS / BIOS-ல் ஆன் ஆகிறது",
+      bootsNo: "ஆன் ஆகவில்லை (மின்சாரம் இல்லை / செயலிழந்தது)",
+      componentsHealthTitle: "உதிரிபாக நலம் சரிபார்ப்பு பட்டியல்",
+      compWorking: "செயல்படுகிறது",
+      compDamaged: "சேதமடைந்துள்ளது",
+      compUntested: "சோதிக்கப்படவில்லை",
+      inspectorNotesLabel: "தொழில்நுட்ப வல்லுநர் குறிப்புகள்",
+      autoSuggestedPathway: "பரிந்துரைக்கப்பட்ட சுழற்சி முறை",
+      acceptSuggestion: "பரிந்துரையை ஏற்றுக்கொள்",
+      overrideSuggestion: "சுழற்சி முறையை மாற்று",
+      batteryDamageWarning: "⚠️ பேட்டரி ஆபத்து: சேதமடைந்த அல்லது வீங்கிய லித்தியம் பேட்டரிகளை மறுபயன்பாடு செய்ய முடியாது. சான்றளிக்கப்பட்ட மறுசுழற்சிக்கு அனுப்பப்பட வேண்டும்.",
+      btnListPartsRescue: "இயங்கும் பாகங்களை மீட்புக் குளத்தில் சேர் 🧩",
+      btnSubmitInspection: "வன்பொருள் ஆய்வை பதிவு செய் 🔬",
+
+      // Outcome & Verification
+      outcomeRecordingTitle: "இறுதி சுழற்சி முடிவு & சான்று",
+      selectOutcomeDevice: "ஆய்வு செய்யப்பட்ட சாதனத்தைத் தேர்வு செய்க",
+      finalPathwayLabel: "இறுதி பதிவு செய்யப்பட்ட முறை",
+      handlingOrgLabel: "சாதனத்தைக் கையாளும் நிறுவனம்",
+      repairCostPaidLabel: "செலுத்தப்பட்ட பழுதுபார்ப்பு செலவு (₹)",
+      comparableNewPriceLabel: "புதிய சாதனத்தின் விலை (₹)",
+      evidenceUploadLabel: "சான்றினை இணைக்கவும் (அறிக்கை, ரசீது, மறுசுழற்சி சான்றிதழ்)",
+      btnRecordOutcome: "முடிவை பதிவு செய்க (சரிபார்ப்புக்கு முந்தைய நிலை) 📋",
+      btnVerifyOutcome: "முடிவை சான்றளித்து தாக்கப் புள்ளிகளை வழங்குக ✅",
+      verificationNotice: "சான்று சரிபார்க்கப்பட்டது. அதிகாரப்பூர்வ நிலைத்தன்மை கணக்கில் சேர்க்கப்பட்டது.",
+
+      // Sustainability Dashboard
+      sustainabilityDashboardTitle: "சான்றளிக்கப்பட்ட நிலைத்தன்மை டாஷ்போர்டு",
+      sustainabilitySubtitle: "தணிக்கை செய்யப்பட்டு சரிபார்க்கப்பட்ட சாதன முடிவுகளின் வெளிப்படையான சுழற்சி புள்ளிவிவரங்கள்",
+      verifiedVsPendingTitle: "தரவு நம்பகத்தன்மை: சரிபார்க்கப்பட்டது vs நிலுவை",
+      verifiedCount: "சரிபார்க்கப்பட்ட முடிவுகள்",
+      pendingCount: "தணிக்கை நிலுவையில் / செயல்பாட்டில்",
+      verifiedSavings: "பயனர்கள் சேமித்த தொகை (₹)",
+      verifiedRepaired: "பழுதுபார்த்து திரும்ப ஒப்படைக்கப்பட்டது",
+      verifiedReused: "புதுப்பித்து மறுவிற்பனை செய்யப்பட்டது",
+      verifiedDonated: "கல்விக்கு நன்கொடை அளிக்கப்பட்டது",
+      verifiedPartsRecovered: "உதிரிபாகங்கள் மீட்கப்பட்டன",
+      verifiedRecycled: "பூஜ்ஜிய-குப்பை மறுசுழற்சி செய்யப்பட்டது",
+      methodologyTitle: "கார்பன் & மின்-கழிவு கணக்கீட்டு முறை",
+      methodologyText: "இந்திய மின்னணு வாழ்க்கைச் சுழற்சி மதிப்பீடுகளின்படி: போனுக்கு 60கிகி CO₂ / 0.2கிகி கழிவு, லேப்டாப்புக்கு 200கிகி CO₂ / 2.5கிகி கழிவு. சான்றளிக்கப்படாத சாதனங்கள் முற்றிலும் தவிர்க்கப்படும்.",
+      outcomeDistributionTitle: "முடிவுகளின் பகிர்வு",
+
+      // Custom Device Addition
+      btnAddCustomModel: "+ புதிய மாதிரி சேர்க்க",
+      customModelModalTitle: "புதிய சாதன மாதிரியைச் சேர்க்க",
+      customDeviceTypeLabel: "சாதன வகை",
+      customBrandLabel: "பிராண்ட் / உற்பத்தியாளர்",
+      customModelNameLabel: "மாதிரி பெயர்",
+      customMSRPLabel: "அசல் புதிய சந்தை விலை (₹)",
+      btnSaveCustomModel: "சேமித்து சாதனத்தைத் தேர்வு செய்க ➕"
     }
   }
 };
